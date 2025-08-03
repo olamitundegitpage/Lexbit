@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - Registration Successful</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .success-animation {
+            animation: bounce 0.5s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="index.html" class="text-2xl font-bold">LexBit</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md text-center">
+            <div class="success-animation mb-8">
+                <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100">
+                    <i class="fas fa-check-circle text-5xl text-green-600"></i>
+                </div>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Registration Successful!</h2>
+            
+            <p class="text-lg text-gray-600 mb-8">
+                Welcome to LexBit! Your account has been successfully created.
+            </p>
+            
+            <div class="space-y-4">
+                <div class="bg-blue-50 p-4 rounded-lg text-left">
+                    <h3 class="font-medium text-gray-800 mb-2">What's next?</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-600">
+                        <li>Check your email for verification</li>
+                        <li>Complete your profile setup</li>
+                        <li>Make your first deposit</li>
+                        <li>Start investing with LexBit</li>
+                    </ol>
+                </div>
+                
+                <div class="flex flex-col space-y-3">
+                    <a href="login.html" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login to Your Account
+                    </a>
+                    
+                    <!-- <a href="index.html">
+                        <i class="fas fa-home mr-2"></i> Return to Homepage
+                    </a> -->
+                </div>
+            </div>
+            
+            <div class="mt-8 text-sm text-gray-500">
+                <p>Didn't receive verification email? <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Resend email</a></p>
+                <p class="mt-2">Need help? <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Contact support</a></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">L</div>
+                    <span class="ml-2 text-xl font-bold text-white">Lexbit</span>
+                </div>
+                <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                </div>
+                <div class="text-sm text-gray-500">
+                    © 2023 Lexbit. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add a small delay to the animation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const successIcon = document.querySelector('.success-animation');
+            successIcon.style.opacity = '0';
+            
+            setTimeout(() => {
+                successIcon.style.opacity = '1';
+                successIcon.style.transition = 'opacity 0.5s ease';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

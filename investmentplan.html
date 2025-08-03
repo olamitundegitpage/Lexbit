@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexbit - Investment Plans</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .plan-card {
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm relative">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+           <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex space-x-8">
+                <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+                <a href="investmentplan.html" class="text-blue-600 font-medium">Investment Plan</a>
+                <a href="referral.html" class="text-gray-600 hover:text-blue-600">Referral</a>
+                <a href="transactions.html" class="text-gray-600 hover:text-blue-600">Transactions</a>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600 relative hidden md:block">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center cursor-pointer hidden md:flex">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500  mr-3"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="investmentplan.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Investment Plan</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Transaction</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Referral</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Menu Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12">
+        <!-- Page Header -->
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Investment Plan</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Select the perfect plan that matches your investment goals and risk appetite.</p>
+        </div>
+        
+        <!-- Investment Plans Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Plan 1 -->
+            <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                <div class="bg-blue-50 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Starter Plan</h3>
+                    <p class="text-gray-600">Perfect for beginners in crypto investing</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">5%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $100</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">6 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Capital protection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">24/7 support</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="starter">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plan 2 (Featured) -->
+            <div class="plan-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border-2 border-blue-500">
+                <div class="bg-blue-100 p-6 relative">
+                    <div class="absolute top-4 right-4 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        POPULAR
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Growth Plan</h3>
+                    <p class="text-gray-600">Balanced growth with moderate risk</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">8%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $500</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">12 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">90% capital protection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Priority support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Weekly market reports</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="growth">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plan 3 -->
+            <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                <div class="bg-blue-50 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Pro Plan</h3>
+                    <p class="text-gray-600">High returns for experienced investors</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">12%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $2,000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">24 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Diversified portfolio</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Dedicated account manager</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Daily market insights</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Exclusive webinars</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="pro">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Required Modal -->
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+                    <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-3">Deposit Required</h3>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-500">You need to deposit funds before you can initiate an investment.</p>
+                </div>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <button type="button" id="cancel-modal" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Maybe Later
+                    </button>
+                    <a href="deposite.html"><button type="button" id="go-to-deposit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Go to Deposit Page
+                    </button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="aboutUs.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-white">Blog Posts</a></li>
+                        <li><a href="support.html" class="hover:text-white">FAQs</a></li>
+                        <li><a href="support.html" class="hover:text-white">Community</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal Info</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Terms of Use</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Risk Disclosure</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">User Guide</a></li>
+                    </ul>
+                </div>
+                <!-- <div>
+                    <h4 class="text-white font-semibold mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Facebook Page</a></li>
+                        <li><a href="#" class="hover:text-white">Twitter Feed</a></li>
+                        <li><a href="#" class="hover:text-white">LinkedIn Profile</a></li>
+                        <li><a href="#" class="hover:text-white">Instagram Account</a></li>
+                        <li><a href="#" class="hover:text-white">YouTube Channel</a></li>
+                    </ul>
+                </div> -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="support.html" class="hover:text-white">Chat Now</a></li>
+                        <li><a href="support.html" class="hover:text-white">Email Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Call Support</a></li>
+                        <li><a href="support.html" class="hover:text-white">Feedback</a></li>
+                        <li><a href="support.html" class="hover:text-white">Careers at Lexbit</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Company Info</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Press Releases</a></li>
+                        <li><a href="#" class="hover:text-white">Investor Relations</a></li>
+                        <li><a href="#" class="hover:text-white">Partnership Opportunities</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Commitment</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Get Started</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Join Our Community</a></li>
+                        <li><a href="#" class="hover:text-white">Follow Us Online</a></li>
+                        <li><a href="#" class="hover:text-white">Stay Updated</a></li>
+                        <li><a href="#" class="hover:text-white">Latest News</a></li>
+                        <li><a href="support.html" class="hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0 gap-2">
+                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                </div>
+                <!-- <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                </div> -->
+                <div class="text-sm text-gray-500">
+                    © 2023 Lexbit. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+        
+        // Check if user has balance (in a real app, this would check actual balance)
+        const userHasBalance = false; // Set to false to test the modal
+        
+        // Get modal elements
+        const modal = document.getElementById('deposit-modal');
+        const cancelBtn = document.getElementById('cancel-modal');
+        const depositBtn = document.getElementById('go-to-deposit');
+        const planButtons = document.querySelectorAll('.choose-plan-btn');
+        
+        // Add click event to all plan buttons
+        planButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const plan = this.getAttribute('data-plan');
+                
+                if (userHasBalance) {
+                    // In a real app, this would initiate the investment process
+                    console.log(`Initiating ${plan} plan investment`);
+                    // window.location.href = `invest-confirm.html?plan=${plan}`;
+                } else {
+                    // Show deposit required modal
+                    modal.style.display = 'flex';
+                    // Close mobile menu if open
+                    mobileMenu.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                }
+            });
+        });
+        
+        // Close modal when cancel button is clicked
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

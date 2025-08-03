@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About LexBit - Secure Crypto Investments</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Mobile menu styles (consistent with other pages) */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <!-- <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+                <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a> -->
+                <a href="#testimonies" class="text-gray-600 hover:text-blue-600">Testimonies</a>
+                <a href="support.html" class="text-gray-600 hover:text-blue-600">Support</a>
+                <a href="aboutUs.html" class="text-blue-600 font-medium">About</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                </div>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <!-- <li>
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="#Testimonies" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Testimonies</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Support</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Referral</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="aboutUs.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
+                            <i class="fas fa-info-circle w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">About Us</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Menu Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">About LexBit</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+                Pioneering the future of cryptocurrency investments with security, transparency, and exceptional returns.
+            </p>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12">Our Story</h2>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="md:w-1/2">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Founded in 2018, LexBit began as a small team of blockchain enthusiasts with a vision to make cryptocurrency investing accessible to everyone. We recognized the potential of digital assets but saw that many investors struggled with complexity and security concerns.
+                        </p>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Our mission was clear: create a platform that combines institutional-grade security with user-friendly tools to help both beginners and experienced investors navigate the crypto markets confidently.
+                        </p>
+                    </div>
+                    <div class="md:w-1/2">
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            Today, LexBit serves over 250,000 users worldwide, processing millions in transactions daily. We've grown beyond our initial vision but remain committed to our core values of transparency, innovation, and putting our users first.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            As the crypto landscape evolves, we continue to adapt, bringing our community the most secure and profitable investment opportunities in the digital asset space.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">By The Numbers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">5+</div>
+                    <div class="text-gray-600">Years in Business</div>
+                </div>
+                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">250K+</div>
+                    <div class="text-gray-600">Active Users</div>
+                </div>
+                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">$500M+</div>
+                    <div class="text-gray-600">Assets Secured</div>
+                </div>
+                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="text-4xl font-bold text-blue-600 mb-2">24/7</div>
+                    <div class="text-gray-600">Customer Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission & Values -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12">Our Mission & Values</h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-shield-alt text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">Security First</h3>
+                        </div>
+                        <p class="text-gray-700">
+                            We implement military-grade encryption, multi-signature wallets, and regular security audits to protect your assets. Your trust is our most valuable asset.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-lightbulb text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">Innovation Driven</h3>
+                        </div>
+                        <p class="text-gray-700">
+                            Our team continuously researches market trends and emerging technologies to bring you cutting-edge investment products with competitive returns.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-hand-holding-usd text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">Transparent Returns</h3>
+                        </div>
+                        <p class="text-gray-700">
+                            No hidden fees or complex terms. We provide clear, predictable returns with detailed reporting so you always know how your investments are performing.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-globe text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">Global Community</h3>
+                        </div>
+                        <p class="text-gray-700">
+                            We serve investors from over 50 countries, fostering a diverse community where members share knowledge and grow together in the crypto economy.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+
+        <!-- CTA Section -->
+    <section class="py-16 gradient-bg text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Ready to Start Your Crypto Journey?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Join thousands of investors who trust LexBit for secure, profitable cryptocurrency investments.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="investmentplan.html" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+                    View Investment Plans
+                </a>
+                <a href="signup.html" class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+                    Create Account
+                </a>
+            </div>
+        </div>
+    </section>
+   
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4 gap-2">
+                        <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                        <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                    </div>
+                    <p class="text-sm">
+                        Pioneering secure cryptocurrency investments since 2018. Trusted by thousands worldwide.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="aboutUs.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Cookie Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Risk Disclosure</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Connect</h3>
+                    <!-- <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-telegram"></i></a>
+                    </div> -->
+                    <p class="text-sm">
+                        support@lexbit.com<br>
+                        
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                © 2023 Lexbit. All rights reserved. Cryptocurrency investments involve risk. Past performance is not indicative of future results.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+    </script>
+</body>
+</html>

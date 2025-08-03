@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - Email Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .otp-input {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 0.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            border: 2px solid #d1d5db;
+            transition: all 0.3s;
+        }
+        .otp-input:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+        .otp-input.filled {
+            border-color: #10B981;
+        }
+        .resend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-md">
+        <!-- Header -->
+        <div class="bg-blue-600 py-4 px-6">
+            <div class="flex items-center justify-center">
+                <i class="fas fa-coins text-2xl text-yellow-400 mr-2"></i>
+                <span class="text-xl font-bold text-white">LexBit</span>
+            </div>
+        </div>
+
+        <!-- Verification Content -->
+        <div class="p-6 sm:p-8">
+            <div class="text-center mb-6">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                    <i class="fas fa-envelope text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Verify Your Email</h2>
+                <p class="text-gray-600">We've sent a 6-digit code to <span class="font-medium">user@example.com</span></p>
+            </div>
+
+            <!-- OTP Form -->
+            <form id="otp-form">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Enter Verification Code</label>
+                    <div class="flex justify-center">
+                        <input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric" pattern="[0-9]*">
+                        <input type="text" maxlength="1" class="otp-input" data-index="6" inputmode="numeric" pattern="[0-9]*">
+                    </div>
+                    <input type="hidden" id="full-otp" name="otp">
+                </div>
+
+                <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                    Verify Account
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">Didn't receive the code? 
+                    <button id="resend-btn" class="text-blue-600 font-medium hover:text-blue-500 resend-btn" disabled>
+                        Resend in <span id="countdown">60</span>s
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Verification Successful!</h3>
+            <p class="text-gray-600 mb-4">Your email has been verified successfully.</p>
+            <button onclick="window.location.href='login.html'" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Continue to Login
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // OTP Input Handling
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const fullOtpInput = document.getElementById('full-otp');
+        const form = document.getElementById('otp-form');
+        const resendBtn = document.getElementById('resend-btn');
+        const countdownEl = document.getElementById('countdown');
+        const successModal = document.getElementById('success-modal');
+
+        // Focus first input on load
+        otpInputs[0].focus();
+
+        // Handle OTP input
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+                
+                // Only allow numbers
+                if (isNaN(value)) {
+                    e.target.value = '';
+                    return;
+                }
+                
+                // Move to next input if current has value
+                if (value && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                // Update filled class
+                if (value) {
+                    e.target.classList.add('filled');
+                } else {
+                    e.target.classList.remove('filled');
+                }
+                
+                updateFullOtp();
+            });
+            
+            // Handle backspace
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Combine all OTP digits
+        function updateFullOtp() {
+            let otp = '';
+            otpInputs.forEach(input => {
+                otp += input.value;
+            });
+            fullOtpInput.value = otp;
+        }
+
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const otp = fullOtpInput.value;
+            
+            // Simple validation
+            if (otp.length !== 6) {
+                alert('Please enter a complete 6-digit code');
+                return;
+            }
+            
+            // In a real app, you would verify the OTP with your backend here
+            console.log('Verifying OTP:', otp);
+            
+            // Simulate verification success
+            setTimeout(() => {
+                successModal.classList.remove('hidden');
+            }, 1000);
+        });
+
+        // Resend OTP countdown
+        let countdown = 60;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(countdownInterval);
+                resendBtn.disabled = false;
+                countdownEl.textContent = '';
+                resendBtn.innerHTML = 'Resend Code';
+            }
+        }, 1000);
+
+        // Resend OTP handler
+        resendBtn.addEventListener('click', () => {
+            // In a real app, you would request a new OTP from your backend here
+            console.log('Resending OTP...');
+            
+            // Reset countdown
+            countdown = 60;
+            resendBtn.disabled = true;
+            countdownEl.textContent = countdown;
+            
+            const newInterval = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(newInterval);
+                    resendBtn.disabled = false;
+                    countdownEl.textContent = '';
+                    resendBtn.innerHTML = 'Resend Code';
+                }
+            }, 1000);
+            
+            // Show message (in a real app, you'd show a success message from your backend)
+            alert('A new verification code has been sent to your email.');
+        });
+    </script>
+</body>
+</html>

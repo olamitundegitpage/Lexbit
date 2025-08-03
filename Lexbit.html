@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexbit - Secure Crypto Investment Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in': 'fadeIn 1.5s ease-in-out',
+                        'slide-up': 'slideUp 1s ease-out',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .plan-card {
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        /* Testimonial slider styles */
+        .testimonial-slider {
+            overflow: hidden;
+            position: relative;
+        }
+        .testimonial-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .testimonial-slide {
+            min-width: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+        .testimonial-nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .testimonial-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .testimonial-dot.active {
+            background-color: #3B82F6;
+        }
+        .testimonial-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.7);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3B82F6;
+        }
+        .testimonial-arrow.prev {
+            left: 10px;
+        }
+        .testimonial-arrow.next {
+            right: 10px;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-700">
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow- fixed top-0 left-0 w-full bg-white shadow z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                    <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="aboutUs.html" class="text-gray-600 hover:text-blue-600">About Us</a>
+                <!-- <a href="#" class="text-gray-600 hover:text-blue-600">Features</a> -->
+                <a href="#testimonials" class="text-gray-600 hover:text-blue-600">Testimonials</a>
+                <!-- <a href="#" class="text-gray-600 hover:text-blue-600">Resources</a> -->
+                <a href="support.html" class="text-gray-600 hover:text-blue-600">Support</a>
+            </nav>
+            <div class="flex space-x-4">
+                <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50">Login</a>
+                <a class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" href="signup.html">Sign up</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <section>
+         <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="aboutUs.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">About Us</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Features</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="#testimonials" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Testimonies</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Resource</span>
+                        </a>
+                    </li> -->
+
+                     <li>
+                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+    </section>
+
+    <!-- Hero Section -->
+ <section class="bg-no-repeat bg-opacity-[10] text-white py-20 h-[900px] bg-cover bg-[url(/images/crypto6.webp)] relative overflow-hidden">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Floating crypto coins -->
+            <div class="absolute top-1/4 left-1/4 w-12 h-12 bg-yellow-400 rounded-full opacity-20 animate-float animation-delay-100"></div>
+            <div class="absolute top-1/3 right-1/3 w-8 h-8 bg-blue-400 rounded-full opacity-20 animate-float animation-delay-300"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-10 h-10 bg-purple-400 rounded-full opacity-20 animate-float animation-delay-500"></div>
+            
+            <!-- Animated gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/50 animate-pulse-slow"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center pt-20 relative z-10">
+            <!-- Text content with staggered animations -->
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-fade-in animation-delay-100">
+                    <span class="inline-block animate-slide-up">Unlock Your Crypto</span><br>
+                    <span class="inline-block animate-slide-up animation-delay-100">Investment Potential</span><br>
+                    <span class="inline-block animate-slide-up animation-delay-200">Today</span>
+                </h1>
+                <p class="text-xl mb-8 animate-fade-in animation-delay-300">
+                    Join Lexbit and take control of your financial future with our secure and user-friendly platform. Start your journey in the world of crypto investing.
+                </p>
+                <div class="flex gap-4 sm:flex-row space-y-0 sm:space-y-0 sm:space-x-4 animate-fade-in animation-delay-500">
+                   <a href="signup.html"> <button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100 transform hover:scale-105 transition-transform duration-300">
+                        Get Started
+                    </button></a>
+                    <a href="#testimonials"><button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-transform duration-300">
+                        See Testimonials
+                    </button></a>
+                </div>
+            </div>
+            
+            <!-- Image with floating animation -->
+            <div class="md:w-1/2 flex justify-center animate-float animation-delay-700">
+                <div class="rounded-xl p-8 mt-0">
+                    <img src="images/bit1-removebg-preview.png" alt="Crypto Dashboard" class="rounded-lg max-w-md transform hover:rotate-6 transition-transform duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-100 mb-4">Discover the Power of Secure Crypto Investment with Lexbit</h2>
+                <p class="text-xl text-gray-100 max-w-3xl mx-auto">Smart Investing Made Simple for Every Investor</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <!-- Feature 1 -->
+                <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm hover:shadow-md transition-shadow ">
+                    <div class="w-14 h-14 bg-blue-100 m-auto  rounded-lg flex items-center  mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" 
+                            class="h-8 w-8 text-blue-600 m-auto justify-center  text-center" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Our Secure Wallet</h3>
+                    <p class="text-gray-600 mb-6">Ensures your assets are protected with bank-grade security.</p>
+                    <a href="#" class="text-blue-600 justify-center font-medium hover:text-blue-700 flex items-center">
+                        Learn More
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Real-Time Alerts</h3>
+                    <p class="text-gray-600 mb-6">Receive instant notifications to make informed investment decisions.</p>
+                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center">
+                        Get Started
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Portfolio Management</h3>
+                    <p class="text-gray-600 mb-6">Track your investments and performance with our intuitive dashboard.</p>
+                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center">
+                        Sign Up
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Features Section -->
+    <section class="py-20 bg-gray-300 ">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Explore Our Cutting-Edge Platform Features</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Lexbit offers a suite of powerful features designed to enhance your crypto investing experience. From secure wallets to smart investing tools, we prioritize your success and security.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-semibold mb-3 text-gray-800">Your Crypto, Your Control</h3>
+                        <p class="text-gray-600">Manage your assets with our secure wallet.</p>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-semibold mb-3 text-gray-800">Invest Smarter with Real-Time Insights</h3>
+                        <p class="text-gray-600">Stay ahead of the market with alerts.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold mb-3 text-gray-800">Stay Informed with Instant Notifications</h3>
+                        <p class="text-gray-600">Receive real-time updates on market movements.</p>
+                    </div>
+                </div>
+                <div class=" p-6 rounded-xl ">
+                    <img src="images/bit8-removebg-preview.png" alt="Lexbit Platform" class="rounded-lg w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Customer Testimonials</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Hear what our users say about their experience with Lexbit</p>
+            </div>
+            
+            <!-- Testimonial Slider -->
+            <div class="testimonial-slider relative">
+                <div class="testimonial-track" id="testimonial-track">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-slide">
+                        <div class="bg-gray-50 p-8 text-center rounded-xl shadow-sm">
+                            <div class="flex mb-4">
+                                <div class="flex text-yellow-400 m-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 italic mb-6">"Lexbit has transformed my investment journey! Investing with Lexbit is both secure and straightforward."</p>
+                            <div class="flex items-center m-auto justify-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-gray-800">John Doe</h4>
+                                    <p class="text-gray-600 text-sm">Investor, TechCorp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-slide">
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-sm text-center">
+                            <div class="flex mb-4 ">
+                                <div class="flex text-yellow-400 m-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 italic mb-6">"I love the real-time alerts for my investments! The platform is so intuitive and easy to use, even for beginners like me."</p>
+                            <div class="flex items-center justify-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JS</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-gray-800">Jane Smith</h4>
+                                    <p class="text-gray-600 text-sm">Trader, FinGroup</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-slide">
+                        <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm">
+                            <div class="flex mb-4 m-auto justify-center">
+                                <div class="flex text-yellow-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 italic mb-6">"The portfolio tools are incredibly user-friendly! I can track all my investments in one place and make informed decisions."</p>
+                            <div class="flex items-center justify-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">AJ</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-gray-800">Alice Johnson</h4>
+                                    <p class="text-gray-600 text-sm">Analyst, Cryptolinc</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 4 -->
+                    <div class="testimonial-slide">
+                        <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm">
+                            <div class="flex mb-4 m-auto justify-center">
+                                <div class="flex text-yellow-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 italic mb-6">"The security features give me peace of mind when investing large amounts. I trust Lexbit with my crypto portfolio."</p>
+                            <div class="flex items-center justify-center">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">RB</div>
+                                <div class="ml-4">
+                                    <h4 class="font-semibold text-gray-800">Robert Brown</h4>
+                                    <p class="text-gray-600 text-sm">Trader, DigitalAssets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Arrows -->
+                <button class="testimonial-arrow prev" aria-label="Previous testimonial">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="testimonial-arrow next" aria-label="Next testimonial">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Navigation Dots -->
+                <div class="testimonial-nav">
+                    <span class="testimonial-dot active" data-index="0"></span>
+                    <span class="testimonial-dot" data-index="1"></span>
+                    <span class="testimonial-dot" data-index="2"></span>
+                    <span class="testimonial-dot" data-index="3"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 py-12 ">
+        <!-- Page Header -->
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-200 mb-4"> Investment Plan</h2>
+        </div>
+        
+        <!-- Investment Plans Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Plan 1 -->
+            <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                <div class="bg-blue-50 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Starter Plan</h3>
+                    <p class="text-gray-600">Perfect for beginners in crypto investing</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">5%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $100</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">6 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Capital protection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">24/7 support</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="starter">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plan 2 (Featured) -->
+            <div class="plan-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border-2 border-blue-500">
+                <div class="bg-blue-100 p-6 relative">
+                    <div class="absolute top-4 right-4 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        POPULAR
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Growth Plan</h3>
+                    <p class="text-gray-600">Balanced growth with moderate risk</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">8%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $500</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">12 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">90% capital protection</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Priority support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Weekly market reports</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="growth">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plan 3 -->
+            <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                <div class="bg-blue-50 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Pro Plan</h3>
+                    <p class="text-gray-600">High returns for experienced investors</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">12%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $2,000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">24 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Diversified portfolio</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Dedicated account manager</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Daily market insights</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Exclusive webinars</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="pro">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gray-500 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Join Lexbit and Start Investing</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Sign up today and unlock the potential of crypto investing with Lexbit's secure platform.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="signup.html"><button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100">Sign Up</button></a>
+                <button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm text-center">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Subscribe to Updates</h3>
+                <p class="text-gray-600 mb-6">Stay informed about crypto investment opportunities and news.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="email" placeholder="Your Email Here" class="px-4 py-3 border border-gray-300 rounded-md flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button class="px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700">Join</button>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">By subscribing you accept our Privacy Policy and Terms. By subscribing you accept our IP</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
+                <!-- Resources -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-white">Blog Posts</a></li>
+                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white">Community</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Legal Info -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal Info</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Terms of Use</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Risk Disclosure</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">User Guide</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Connect -->
+                <!-- <div>
+                    <h4 class="text-white font-semibold mb-4">Connect</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Facebook Page</a></li>
+                        <li><a href="#" class="hover:text-white">Twitter Feed</a></li>
+                        <li><a href="#" class="hover:text-white">LinkedIn Profile</a></li>
+                        <li><a href="#" class="hover:text-white">Instagram Account</a></li>
+                        <li><a href="#" class="hover:text-white">YouTube Channel</a></li>
+                    </ul>
+                </div> -->
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="support.html" class="hover:text-white">Chat Now</a></li>
+                        <li><a href="support.html" class="hover:text-white">Email Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Call Support</a></li>
+                        <li><a href="support.html" class="hover:text-white">Feedback</a></li>
+                        <li><a href="support.html" class="hover:text-white">Careers at Lexbit</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company Info -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Company Info</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Press Releases</a></li>
+                        <li><a href="#" class="hover:text-white">Investor Relations</a></li>
+                        <li><a href="#" class="hover:text-white">Partnership Opportunities</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Commitment</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Get Started -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Get Started</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Join Our Community</a></li>
+                        <li><a href="#" class="hover:text-white">Follow Us Online</a></li>
+                        <li><a href="#" class="hover:text-white">Stay Updated</a></li>
+                        <li><a href="#" class="hover:text-white">Latest News</a></li>
+                        <li><a href="support.html" class="hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0 gap-2">
+                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                    <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                </div>
+                <!-- <div class="flex space-x-6 mb-4 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                </div> -->
+                <div class="text-sm text-gray-500">
+                    © 2023 Lexbit. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        // Testimonial slider functionality
+        const track = document.getElementById('testimonial-track');
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const dots = document.querySelectorAll('.testimonial-dot');
+        const prevBtn = document.querySelector('.testimonial-arrow.prev');
+        const nextBtn = document.querySelector('.testimonial-arrow.next');
+        
+        let currentIndex = 0;
+        const slideCount = slides.length;
+        
+        // Update slider position
+        function updateSlider() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+        
+        // Next slide
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slideCount;
+            updateSlider();
+        }
+        
+        // Previous slide
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+            updateSlider();
+        }
+        
+        // Go to specific slide
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlider();
+        }
+        
+        // Event listeners
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToSlide(parseInt(dot.dataset.index));
+            });
+        });
+        
+        // Auto-advance slides (optional)
+        let slideInterval = setInterval(nextSlide, 5000);
+        
+        // Pause auto-advance on hover
+        const slider = document.querySelector('.testimonial-slider');
+        slider.addEventListener('mouseenter', () => {
+            clearInterval(slideInterval);
+        });
+        
+        slider.addEventListener('mouseleave', () => {
+            slideInterval = setInterval(nextSlide, 5000);
+        });
+    </script>
+</body>
+</html>

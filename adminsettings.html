@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - Admin Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar-collapsed {
+            transform: translateX(-100%);
+            width: 0;
+            overflow: hidden;
+        }
+        .content-expanded {
+            margin-left: 0;
+        }
+        .active-menu {
+            background-color: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            color: #3B82F6;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            min-width: 160px;
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .close-btn {
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-collapsed .close-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button.active {
+            border-bottom: 2px solid #3B82F6;
+            color: #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 bg-white shadow-md w-64 z-20">
+        <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
+            <div class="flex items-center">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <span class="ml-2 text-xl font-bold">LexBit Admin</span>
+            </div>
+            <button id="sidebar-close" class="close-btn text-gray-500 hover:text-gray-700 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="overflow-y-auto overflow-x-hidden flex-grow">
+            <ul class="flex flex-col py-4 space-y-1">
+                <li class="px-5">
+                    <div class="flex flex-row items-center h-8">
+                        <div class="text-sm font-light tracking-wide text-gray-500 uppercase">Main</div>
+                    </div>
+                </li>
+                <li>
+                    <a href="admin.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminuser.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-users"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Users</span>
+                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">15</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admintransaction.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-wallet"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Transactions</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admininvestment.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-chart-line"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Investments</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminreferral.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-gift"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Referrals</span>
+                    </a>
+                </li>
+                
+                <li class="px-5 pt-5">
+                    <div class="flex flex-row items-center h-8">
+                        <div class="text-sm font-light tracking-wide text-gray-500 uppercase">Management</div>
+                    </div>
+                </li>
+                <li>
+                    <a href="adminsettings.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6 active-menu">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-cog"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminNotification.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-bell"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
+                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">3</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminsupport.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-question-circle"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="content-expanded flex flex-col flex-1">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm z-10">
+            <div class="flex items-center justify-between h-16 px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="relative ml-4">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search settings...">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="p-1 text-gray-400 rounded-full hover:text-gray-500 focus:outline-none">
+                        <span class="sr-only">Notifications</span>
+                        <div class="relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </div>
+                    </button>
+                    
+                    <!-- Profile dropdown -->
+                    <div class="dropdown relative ml-3">
+                        <div>
+                            <button class="flex text-sm rounded-full focus:outline-none">
+                                <span class="sr-only">Open user menu</span>
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+                            </button>
+                        </div>
+                        <div class="dropdown-content mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Settings Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Platform Settings</h1>
+                    <p class="text-gray-600">Configure and manage all platform settings</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-history mr-2"></i>Reset Changes
+                    </button>
+                    <button class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <i class="fas fa-save mr-2"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Settings Tabs -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button data-tab="general" class="tab-button active py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-cog mr-2"></i>General
+                        </button>
+                        <button data-tab="security" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-shield-alt mr-2"></i>Security
+                        </button>
+                        <button data-tab="payment" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-credit-card mr-2"></i>Payments
+                        </button>
+                        <button data-tab="email" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-envelope mr-2"></i>Email
+                        </button>
+                        <button data-tab="api" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-code mr-2"></i>API
+                        </button>
+                        <button data-tab="maintenance" class="tab-button py-4 px-6 text-center border-b-2 font-medium text-sm">
+                            <i class="fas fa-tools mr-2"></i>Maintenance
+                        </button>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- General Settings Tab -->
+            <div id="general-tab" class="tab-content active">
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">General Settings</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="platform-name" class="block text-sm font-medium text-gray-700">Platform Name</label>
+                                <input type="text" id="platform-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="LexBit Investment">
+                            </div>
+                            <div>
+                                <label for="platform-url" class="block text-sm font-medium text-gray-700">Platform URL</label>
+                                <input type="text" id="platform-url" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="https://lexbit.com">
+                            </div>
+                            <div>
+                                <label for="platform-currency" class="block text-sm font-medium text-gray-700">Default Currency</label>
+                                <select id="platform-currency" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="USD" selected>US Dollar (USD)</option>
+                                    <option value="EUR">Euro (EUR)</option>
+                                    <option value="GBP">British Pound (GBP)</option>
+                                    <option value="BTC">Bitcoin (BTC)</option>
+                                    <option value="ETH">Ethereum (ETH)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="timezone" class="block text-sm font-medium text-gray-700">Timezone</label>
+                                <select id="timezone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="UTC" selected>UTC</option>
+                                    <option value="EST">Eastern Time (EST)</option>
+                                    <option value="PST">Pacific Time (PST)</option>
+                                    <option value="GMT">London (GMT)</option>
+                                    <option value="CET">Central Europe (CET)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="platform-description" class="block text-sm font-medium text-gray-700">Platform Description</label>
+                                <textarea id="platform-description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">LexBit is a premium cryptocurrency investment platform offering secure and profitable investment plans.</textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="logo" class="block text-sm font-medium text-gray-700">Platform Logo</label>
+                                <div class="mt-1 flex items-center">
+                                    <span class="h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                        <img class="h-full w-full" src="https://via.placeholder.com/150" alt="Current logo">
+                                    </span>
+                                    <button type="button" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Change
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="favicon" class="block text-sm font-medium text-gray-700">Favicon</label>
+                                <div class="mt-1 flex items-center">
+                                    <span class="h-8 w-8 rounded overflow-hidden bg-gray-100">
+                                        <img class="h-full w-full" src="https://via.placeholder.com/32" alt="Current favicon">
+                                    </span>
+                                    <button type="button" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Change
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">User Registration Settings</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="allow-registration" name="allow-registration" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="allow-registration" class="font-medium text-gray-700">Allow New User Registration</label>
+                                        <p class="text-gray-500">Enable or disable new user signups on the platform</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="email-verification" name="email-verification" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="email-verification" class="font-medium text-gray-700">Require Email Verification</label>
+                                        <p class="text-gray-500">Users must verify their email before accessing account</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="kyc-verification" name="kyc-verification" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="kyc-verification" class="font-medium text-gray-700">Require KYC Verification</label>
+                                        <p class="text-gray-500">Users must complete KYC before making transactions</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="referral-signup" name="referral-signup" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="referral-signup" class="font-medium text-gray-700">Enable Referral Signup</label>
+                                        <p class="text-gray-500">Allow users to register with referral codes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Settings Tab -->
+            <div id="security-tab" class="tab-content">
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Security Settings</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="2fa-required" name="2fa-required" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="2fa-required" class="font-medium text-gray-700">Require 2FA for Admin</label>
+                                        <p class="text-gray-500">Admin accounts must use two-factor authentication</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="user-2fa" name="user-2fa" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="user-2fa" class="font-medium text-gray-700">Enable 2FA for Users</label>
+                                        <p class="text-gray-500">Allow users to enable two-factor authentication</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="login-attempts" class="block text-sm font-medium text-gray-700">Failed Login Attempts Before Lockout</label>
+                                <input type="number" id="login-attempts" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="5">
+                            </div>
+                            <div>
+                                <label for="lockout-time" class="block text-sm font-medium text-gray-700">Account Lockout Duration (minutes)</label>
+                                <input type="number" id="lockout-time" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="30">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="allowed-ips" class="block text-sm font-medium text-gray-700">Admin Restricted IPs (comma separated)</label>
+                                <textarea id="allowed-ips" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">192.168.1.1, 10.0.0.1</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Password Policy</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="min-password-length" class="block text-sm font-medium text-gray-700">Minimum Password Length</label>
+                                <input type="number" id="min-password-length" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="8">
+                            </div>
+                            <div>
+                                <label for="password-complexity" class="block text-sm font-medium text-gray-700">Password Complexity</label>
+                                <select id="password-complexity" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="low">Low (letters only)</option>
+                                    <option value="medium" selected>Medium (letters and numbers)</option>
+                                    <option value="high">High (letters, numbers, and special characters)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="password-expiry" name="password-expiry" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="password-expiry" class="font-medium text-gray-700">Enable Password Expiry</label>
+                                        <p class="text-gray-500">Require users to change passwords periodically</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="expiry-days" class="block text-sm font-medium text-gray-700">Password Expiry Days</label>
+                                <input type="number" id="expiry-days" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="90" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Settings Tab -->
+            <div id="payment-tab" class="tab-content">
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Payment Settings</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="min-deposit" class="block text-sm font-medium text-gray-700">Minimum Deposit Amount</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input type="text" id="min-deposit" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" value="10.00">
+                                    <div class="absolute inset-y-0 right-0 flex items-center">
+                                        <select class="focus:ring-blue-500 focus:border-blue-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
+                                            <option>USD</option>
+                                            <option>EUR</option>
+                                            <option>BTC</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="min-withdrawal" class="block text-sm font-medium text-gray-700">Minimum Withdrawal Amount</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input type="text" id="min-withdrawal" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" value="20.00">
+                                    <div class="absolute inset-y-0 right-0 flex items-center">
+                                        <select class="focus:ring-blue-500 focus:border-blue-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
+                                            <option>USD</option>
+                                            <option>EUR</option>
+                                            <option>BTC</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="withdrawal-fee" class="block text-sm font-medium text-gray-700">Withdrawal Fee (%)</label>
+                                <input type="number" id="withdrawal-fee" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="1.5">
+                            </div>
+                            <div>
+                                <label for="withdrawal-fee-min" class="block text-sm font-medium text-gray-700">Minimum Withdrawal Fee</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input type="text" id="withdrawal-fee-min" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" value="1.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Payment Methods</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="enable-bank" name="enable-bank" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="enable-bank" class="font-medium text-gray-700">Enable Bank Transfer</label>
+                                        <p class="text-gray-500">Allow users to deposit/withdraw via bank transfer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="enable-card" name="enable-card" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="enable-card" class="font-medium text-gray-700">Enable Credit/Debit Cards</label>
+                                        <p class="text-gray-500">Allow users to deposit via credit/debit cards</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="enable-paypal" name="enable-paypal" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="enable-paypal" class="font-medium text-gray-700">Enable PayPal</label>
+                                        <p class="text-gray-500">Allow users to deposit/withdraw via PayPal</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="enable-crypto" name="enable-crypto" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="enable-crypto" class="font-medium text-gray-700">Enable Cryptocurrency</label>
+                                        <p class="text-gray-500">Allow users to deposit/withdraw via cryptocurrency</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Email Settings Tab -->
+            <div id="email-tab" class="tab-content">
+                <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Email Configuration</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="mail-driver" class="block text-sm font-medium text-gray-700">Mail Driver</label>
+                                <select id="mail-driver" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="smtp" selected>SMTP</option>
+                                    <option value="mailgun">Mailgun</option>
+                                    <option value="ses">Amazon SES</option>
+                                    <option value="sendmail">Sendmail</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="mail-from" class="block text-sm font-medium text-gray-700">From Address</label>
+                                <input type="email" id="mail-from" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="noreply@lexbit.com">
+                            </div>
+                            <div>
+                                <label for="mail-from-name" class="block text-sm font-medium text-gray-700">From Name</label>
+                                <input type="text" id="mail-from-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="LexBit Support">
+                            </div>
+                            <div>
+                                <label for="mail-encryption" class="block text-sm font-medium text-gray-700">Encryption</label>
+                                <select id="mail-encryption" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="tls" selected>TLS</option>
+
+            <script>
+        // Toggle sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('content-expanded');
+        }
+        
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarClose.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking outside (on mobile)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
+                event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
+                if (!sidebar.classList.contains('sidebar-collapsed')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Set active menu item
+        const menuItems = document.querySelectorAll('#sidebar ul li a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active-menu'));
+                this.classList.add('active-menu');
+                
+                // Close sidebar on mobile after selection
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Initialize dropdowns
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+
+        // Show dropdown when clicking on profile
+        document.querySelector('.dropdown button').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.parentNode.querySelector('.dropdown-content');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('sidebar-collapsed');
+                mainContent.classList.remove('content-expanded');
+            }
+        });
+    </script>
+
+
+                                    
+</body>
+</html>

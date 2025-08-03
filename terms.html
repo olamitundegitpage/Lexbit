@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions - LexBit Crypto Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .terms-container {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        /* Custom scrollbar */
+        .terms-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terms-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .terms-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .terms-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
+            <!-- <div class="hidden md:flex space-x-8">
+                <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+                <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
+                <a href="referral.html" class="text-gray-600 hover:text-blue-600">Referral</a>
+                <a href="transactions.html" class="text-gray-600 hover:text-blue-600">Transactions</a>
+                <a href="support.html" class="text-gray-600 hover:text-blue-600">Support</a>
+            </div> -->
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                </div>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <!-- <li>
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="investmentplan.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Investment Plan</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Transactions</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Referral</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-headset w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Menu Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Terms and Conditions</h1>
+            <p class="text-gray-600">Last updated: January 1, 2023</p>
+        </div>
+
+        <!-- Terms Content -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-8 terms-container">
+                <div class="prose max-w-none">
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">1. Introduction</h2>
+                        <p class="text-gray-700 mb-4">
+                            Welcome to LexBit ("we," "our," or "us"). These Terms and Conditions ("Terms") govern your use of our cryptocurrency investment platform and services (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms.
+                        </p>
+                        <p class="text-gray-700">
+                            These Terms constitute a legally binding agreement between you and LexBit. If you do not agree with these Terms, you must not use our Services.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">2. Account Registration</h2>
+                        <p class="text-gray-700 mb-4">
+                            To use our Services, you must register for an account and provide accurate, current, and complete information. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
+                        </p>
+                        <p class="text-gray-700">
+                            You must be at least 18 years old to use our Services. By registering, you represent and warrant that you meet this age requirement.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">3. Investment Risks</h2>
+                        <p class="text-gray-700 mb-4">
+                            Cryptocurrency investments involve substantial risk. The value of cryptocurrencies can fluctuate significantly, and you may lose some or all of your invested capital. Past performance is not indicative of future results.
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            LexBit does not provide investment advice. All investment decisions are made at your own discretion and risk. You should carefully consider your investment objectives, level of experience, and risk appetite before making any investment.
+                        </p>
+                        <p class="text-gray-700">
+                            Cryptocurrencies are not legal tender and are not backed by any government. Regulatory changes may affect the value or legality of certain cryptocurrencies.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">4. User Responsibilities</h2>
+                        <p class="text-gray-700 mb-4">
+                            You agree to:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700 mb-4">
+                            <li>Provide accurate and complete information during registration</li>
+                            <li>Maintain the security of your account credentials</li>
+                            <li>Comply with all applicable laws and regulations</li>
+                            <li>Not engage in fraudulent, illegal, or unauthorized activities</li>
+                            <li>Not use our Services for money laundering or terrorist financing</li>
+                        </ul>
+                        <p class="text-gray-700">
+                            You are solely responsible for any taxes associated with your cryptocurrency transactions.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">5. Fees and Payments</h2>
+                        <p class="text-gray-700 mb-4">
+                            LexBit charges fees for certain Services, which will be clearly disclosed before you complete a transaction. Fees may include:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700 mb-4">
+                            <li>Investment management fees</li>
+                            <li>Transaction fees</li>
+                            <li>Withdrawal fees</li>
+                        </ul>
+                        <p class="text-gray-700">
+                            All fees are subject to change with prior notice. You are responsible for reviewing the current fee schedule before making transactions.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">6. Intellectual Property</h2>
+                        <p class="text-gray-700 mb-4">
+                            All content, trademarks, service marks, logos, and other intellectual property on our platform are owned by or licensed to LexBit. You are granted a limited, non-exclusive, non-transferable license to access and use our Services for personal, non-commercial purposes.
+                        </p>
+                        <p class="text-gray-700">
+                            You may not reproduce, distribute, modify, or create derivative works of our content without our express written permission.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">7. Termination</h2>
+                        <p class="text-gray-700 mb-4">
+                            We may suspend or terminate your access to our Services at any time, with or without cause, and without prior notice. Upon termination:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700 mb-4">
+                            <li>Your right to use our Services immediately ceases</li>
+                            <li>You remain liable for all outstanding fees and charges</li>
+                            <li>We may retain your information as required by law</li>
+                        </ul>
+                        <p class="text-gray-700">
+                            You may terminate your account at any time by contacting support, subject to the settlement of any outstanding obligations.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">8. Limitation of Liability</h2>
+                        <p class="text-gray-700 mb-4">
+                            To the maximum extent permitted by law, LexBit shall not be liable for:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700 mb-4">
+                            <li>Any indirect, incidental, or consequential damages</li>
+                            <li>Loss of profits, data, or goodwill</li>
+                            <li>Investment losses or market fluctuations</li>
+                            <li>Unauthorized access to or alteration of your transmissions</li>
+                        </ul>
+                        <p class="text-gray-700">
+                            Our total liability for any claims related to our Services shall not exceed the fees you paid to us in the six months preceding the claim.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">9. Dispute Resolution</h2>
+                        <p class="text-gray-700 mb-4">
+                            Any disputes arising from these Terms shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association. The arbitration shall take place in Delaware and shall be conducted in English.
+                        </p>
+                        <p class="text-gray-700">
+                            You waive your right to participate in a class action lawsuit or class-wide arbitration against LexBit.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">10. Governing Law</h2>
+                        <p class="text-gray-700 mb-4">
+                            These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions.
+                        </p>
+                    </section>
+
+                    <section class="mb-10">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">11. Changes to Terms</h2>
+                        <p class="text-gray-700 mb-4">
+                            We may modify these Terms at any time. We will notify you of significant changes through our platform or by email. Your continued use of our Services after such changes constitutes your acceptance of the new Terms.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">12. Contact Information</h2>
+                        <p class="text-gray-700">
+                            For questions about these Terms, please contact us at:
+                        </p>
+                        <p class="text-gray-700 mt-2">
+                            LexBit Support<br>
+                            support@lexbit.com<br>
+                            123 Crypto Street, Wilmington, DE 19801<br>
+                            +1 (800) 123-4567
+                        </p>
+                    </section>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-8 py-6 border-t border-gray-200">
+                <div class="flex items-center justify-center">
+                    <input id="accept-terms" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="accept-terms" class="ml-2 block text-sm text-gray-700">I have read and agree to the Terms and Conditions</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">L</div>
+                        <span class="ml-2 text-xl font-bold text-white">Lexbit</span>
+                    </div>
+                    <p class="text-sm">
+                        Secure cryptocurrency investment platform with transparent returns since 2018.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-white">Home</a></li>
+                        <li><a href="investmentplan.html" class="hover:text-white">Investment Plans</a></li>
+                        <li><a href="about.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="terms.html" class="text-blue-400 hover:text-blue-300">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Risk Disclosure</a></li>
+                        <li><a href="#" class="hover:text-white">AML Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Connect</h3>
+                    <!-- <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-telegram"></i></a>
+                    </div> -->
+                    <p class="text-sm">
+                        support@lexbit.com<br>
+                       
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                © 2023 Lexbit. All rights reserved. Cryptocurrency investments involve risk. Past performance is not indicative of future results.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        // Scroll to top when terms checkbox is clicked
+        document.getElementById('accept-terms').addEventListener('change', function() {
+            if (this.checked) {
+                // In a real implementation, you might want to enable a continue button
+                console.log('Terms accepted');
+            }
+        });
+    </script>
+</body>
+</html>

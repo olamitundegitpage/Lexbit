@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar-collapsed {
+            transform: translateX(-100%);
+            width: 0;
+            overflow: hidden;
+        }
+        .content-expanded {
+            margin-left: 0;
+        }
+        .active-menu {
+            background-color: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            color: #3B82F6;
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            min-width: 160px;
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .close-btn {
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-collapsed .close-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 bg-white shadow-md w-64 z-20">
+        <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
+            <div class="flex items-center">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <span class="ml-2 text-xl font-bold">LexBit Admin</span>
+            </div>
+            <button id="sidebar-close" class="close-btn text-gray-500 hover:text-gray-700 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="overflow-y-auto overflow-x-hidden flex-grow">
+            <ul class="flex flex-col py-4 space-y-1">
+                <li class="px-5">
+                    <div class="flex flex-row items-center h-8">
+                        <div class="text-sm font-light tracking-wide text-gray-500 uppercase">Main</div>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6 active-menu">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminuser.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-users"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Users</span>
+                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">15</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admintransaction.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-wallet"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Transactions</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="admininvestment.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-chart-line"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Investments</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminreferral.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-gift"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Referrals</span>
+                    </a>
+                </li>
+                
+                <li class="px-5 pt-5">
+                    <div class="flex flex-row items-center h-8">
+                        <div class="text-sm font-light tracking-wide text-gray-500 uppercase">Management</div>
+                    </div>
+                </li>
+                <li>
+                    <a href="adminsettings.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-cog"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminNotification.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-bell"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
+                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">3</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="adminsupport.html" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-blue-500 pr-6">
+                        <span class="inline-flex justify-center items-center ml-4">
+                            <i class="fas fa-question-circle"></i>
+                        </span>
+                        <span class="ml-2 text-sm tracking-wide truncate">Support</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="content-expanded flex flex-col flex-1">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm z-10">
+            <div class="flex items-center justify-between h-16 px-6">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="relative ml-4">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search...">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="p-1 text-gray-400 rounded-full hover:text-gray-500 focus:outline-none">
+                        <span class="sr-only">Notifications</span>
+                        <div class="relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </div>
+                    </button>
+                    
+                    <!-- Profile dropdown -->
+                    <div class="dropdown relative ml-3">
+                        <div>
+                            <button class="flex text-sm rounded-full focus:outline-none">
+                                <span class="sr-only">Open user menu</span>
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+                            </button>
+                        </div>
+                        <div class="dropdown-content mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+                <p class="text-gray-600">Welcome back, Admin</p>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-blue-100 rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 truncate">Total Users</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">1,248</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-600 text-sm font-semibold">+12.5%</span>
+                        <span class="text-gray-500 text-sm ml-2">from last month</span>
+                    </div>
+                </div>
+                
+                <div class="bg-green-100 rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 truncate">Active Investments</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">856</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-chart-line text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-600 text-sm font-semibold">+8.3%</span>
+                        <span class="text-gray-500 text-sm ml-2">from last month</span>
+                    </div>
+                </div>
+                
+                <div class="bg-pink-100 rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 truncate">Total Deposits</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">$248,750</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-green-600 text-sm font-semibold">+18.7%</span>
+                        <span class="text-gray-500 text-sm ml-2">from last month</span>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-100 rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500 truncate">Pending Withdrawals</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900">24</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                            <i class="fas fa-exchange-alt text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-red-600 text-sm font-semibold">-2.4%</span>
+                        <span class="text-gray-500 text-sm ml-2">from last month</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-medium text-gray-900">User Growth</h2>
+                        <div class="relative">
+                            <select class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option selected>Last 12 months</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart would be rendered here with a library like Chart.js -->
+                        <div class="flex items-center justify-center h-full bg-gray-50 rounded">
+                            <p class="text-gray-500">User Growth Chart</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-medium text-gray-900">Investment Distribution</h2>
+                        <div class="relative">
+                            <select class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                                <option>By Plan</option>
+                                <option selected>By Country</option>
+                                <option>By Duration</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart would be rendered here with a library like Chart.js -->
+                        <div class="flex items-center justify-center h-full bg-gray-50 rounded">
+                            <p class="text-gray-500">Investment Distribution Chart</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity & Quick Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recent Transactions -->
+                <div class="lg:col-span-2 bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+                            <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">JD</div>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                                    <div class="text-sm text-gray-500">john@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Deposit</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$1,200.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 15, 2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">AS</div>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Alice Smith</div>
+                                                    <div class="text-sm text-gray-500">alice@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Withdrawal</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$500.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 14, 2023</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">RJ</div>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
+                                                    <div class="text-sm text-gray-500">robert@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Investment</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$2,500.00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 13, 2023</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
+                    <div class="space-y-4">
+                        <a href="adminadduser.html" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition">
+                            <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-3">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Add New User</h3>
+                                <p class="text-xs text-gray-500">Create a new user account</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-200 transition">
+                            <div class="p-2 rounded-full bg-green-100 text-green-600 mr-3">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Process Withdrawal</h3>
+                                <p class="text-xs text-gray-500">Approve pending withdrawals</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-200 transition">
+                            <div class="p-2 rounded-full bg-purple-100 text-purple-600 mr-3">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">Send Notification</h3>
+                                <p class="text-xs text-gray-500">Create a new announcement</p>
+                            </div>
+                        </a>
+                        <a href="#" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-200 transition">
+                            <div class="p-2 rounded-full bg-yellow-100 text-yellow-600 mr-3">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900">System Settings</h3>
+                                <p class="text-xs text-gray-500">Configure platform settings</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('content-expanded');
+        }
+        
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarClose.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking outside (on mobile)
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
+                event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
+                if (!sidebar.classList.contains('sidebar-collapsed')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Set active menu item
+        const menuItems = document.querySelectorAll('#sidebar ul li a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active-menu'));
+                this.classList.add('active-menu');
+                
+                // Close sidebar on mobile after selection
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Initialize dropdowns
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+
+        // Show dropdown when clicking on profile
+        document.querySelector('.dropdown button').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.parentNode.querySelector('.dropdown-content');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('sidebar-collapsed');
+                mainContent.classList.remove('content-expanded');
+            }
+        });
+    </script>
+</body>
+</html>

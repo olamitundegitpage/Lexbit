@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexbit - Referral Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .referral-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+         .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+
+
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+             <div class="flex items-center space-x-2">
+                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                    <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
+                <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
+                <a href="referral.html" class="text-blue-600 hover:text-blue-600">Referral</a>
+                <a href="transactions.html" class="text-gray-600 font-medium">Transaction</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                </div>
+            </div>
+             <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section>
+            <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-600">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="investmentplan.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Investment Plan</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-gray-500 mr-3"></i>
+                            <span class="font-medium">Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Referral</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Menu Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+  
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Referral Program</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Invite friends and earn up to 15% commission on their investments</p>
+        </div>
+
+        <!-- Referral Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">12</div>
+                <div class="text-gray-600">Total Referrals</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">5</div>
+                <div class="text-gray-600">Active Referrals</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">$1,245</div>
+                <div class="text-gray-600">Total Earnings</div>
+            </div>
+        </div>
+
+        <!-- Referral Banner -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-lg overflow-hidden mb-12">
+            <div class="p-8 md:p-12 flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-6 md:mb-0">
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Earn Passive Income</h2>
+                    <p class="text-blue-100 mb-6">Share your referral link and earn 15% commission on every deposit your friends make.</p>
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <button class="bg-white text-blue-600 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg">
+                            Share Link
+                        </button>
+                        <button class="bg-blue-500 bg-opacity-30 text-white hover:bg-opacity-40 font-medium py-3 px-6 rounded-lg border border-blue-300">
+                            How It Works
+                        </button>
+                    </div>
+                </div>
+                <!-- <div class="md:w-1/2 flex justify-center">
+                    <img src="https://illustrations.popsy.co/amber/referral.svg" alt="Referral Illustration" class="w-64 h-64">
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Referral Link Section -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-12">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Your Referral Link</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="flex items-center">
+                            <input type="text" id="referral-link" value="https://lexbit.io/ref/johndoe123" class="bg-transparent flex-1 text-sm font-mono" readonly>
+                            <button onclick="copyReferralLink()" class="copy-btn ml-2 text-blue-600 hover:text-blue-800 p-2">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- <div class="flex space-x-2">
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
+                            <i class="fab fa-facebook-f"></i>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
+                            <i class="fab fa-telegram"></i>
+                        </button>
+                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral Tiers -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Referral Tiers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Tier 1 -->
+                <div class="referral-card bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-500 transition duration-300">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Basic Tier</h3>
+                            <p class="text-gray-600">Up to 5 referrals</p>
+                        </div>
+                        <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">Current</div>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-4">10% <span class="text-lg text-gray-500">commission</span></div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">10% from level 1</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Basic rewards</span>
+                        </li>
+                    </ul>
+                    <div class="bg-gray-100 rounded-full h-2 mb-2">
+                        <div class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500">5/5 referrals (100%)</p>
+                </div>
+                
+                <!-- Tier 2 -->
+                <div class="referral-card bg-white rounded-xl shadow-sm p-6 border-t-4 border-purple-500 transition duration-300">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Premium Tier</h3>
+                            <p class="text-gray-600">6-15 referrals</p>
+                        </div>
+                        <div class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-medium">Next</div>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-4">12% <span class="text-lg text-gray-500">commission</span></div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">12% from level 1</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">5% from level 2</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Premium rewards</span>
+                        </li>
+                    </ul>
+                    <div class="bg-gray-100 rounded-full h-2 mb-2">
+                        <div class="progress-bar bg-purple-500 h-2 rounded-full" style="width: 40%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500">5/15 referrals (40%)</p>
+                </div>
+                
+                <!-- Tier 3 -->
+                <div class="referral-card bg-white rounded-xl shadow-sm p-6 border-t-4 border-yellow-500 transition duration-300">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">VIP Tier</h3>
+                            <p class="text-gray-600">16+ referrals</p>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 mb-4">15% <span class="text-lg text-gray-500">commission</span></div>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">15% from level 1</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">7% from level 2</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">3% from level 3</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-600">VIP rewards</span>
+                        </li>
+                    </ul>
+                    <div class="bg-gray-100 rounded-full h-2 mb-2">
+                        <div class="progress-bar bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
+                    </div>
+                    <p class="text-sm text-gray-500">5/16 referrals (25%)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral History -->
+        <!-- <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-800">Referral History</h2>
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    View All
+                </button>
+            </div>
+            <div class="divide-y divide-gray-200"> -->
+                <!-- Referral 1 -->
+                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">JD</div>
+                        <div>
+                            <p class="font-medium">john.doe@example.com</p>
+                            <p class="text-sm text-gray-500">Registered: Jun 10, 2023</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="font-medium text-green-600">Active</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Invested</p>
+                            <p class="font-medium">$2,500.00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Earned</p>
+                            <p class="font-medium">$250.00</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <!-- Referral 2 -->
+                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">AS</div>
+                        <div>
+                            <p class="font-medium">alice.smith@example.com</p>
+                            <p class="text-sm text-gray-500">Registered: May 28, 2023</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="font-medium text-green-600">Active</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Invested</p>
+                            <p class="font-medium">$1,200.00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Earned</p>
+                            <p class="font-medium">$120.00</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <!-- Referral 3 -->
+                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">RJ</div>
+                        <div>
+                            <p class="font-medium">robert.johnson@example.com</p>
+                            <p class="text-sm text-gray-500">Registered: May 15, 2023</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="font-medium text-yellow-600">Pending</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Invested</p>
+                            <p class="font-medium">$0.00</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Earned</p>
+                            <p class="font-medium">$0.00</p>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0 gap-2">
+                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                </div>
+                <!-- <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                </div> -->
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                © 2023 Lexbit. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy referral link function
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referral-link');
+            navigator.clipboard.writeText(referralLink.value).then(function() {
+                alert('Referral link copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+        
+        // Mobile menu toggle (if using the navigation script)
+        document.querySelector('button.md\\:hidden').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('hidden');
+            }
+        });
+
+
+           // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+    </script>
+</body>
+</html>

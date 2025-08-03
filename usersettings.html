@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - User Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .settings-tab {
+            display: none;
+        }
+        .settings-tab.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            color: #3B82F6;
+        }
+        .avatar-upload {
+            position: relative;
+            max-width: 120px;
+        }
+        .avatar-upload .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #E5E7EB;
+            background-size: cover;
+            background-position: center;
+        }
+        .avatar-upload .upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #3B82F6;
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #3B82F6;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .security-badge {
+            background-color: #ECFDF5;
+            color: #065F46;
+        }
+        .verification-badge {
+            background-color: #EFF6FF;
+            color: #1E40AF;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="userinfo.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <div class="relative">
+                    <button class="flex items-center text-sm rounded-full focus:outline-none">
+                        <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="User profile">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 pt-24 pb-8">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Sidebar Navigation -->
+            <div class="md:w-64 flex-shrink-0">
+                <div class="bg-white rounded-lg shadow-sm p-4 sticky top-28">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-12 h-12 rounded-full">
+                        <div>
+                            <h3 class="font-semibold">John Doe</h3>
+                            <p class="text-sm text-gray-500">Pro Member</p>
+                        </div>
+                    </div>
+                    
+                    <nav class="space-y-1">
+                        <a href="#" class="nav-link active block px-4 py-2 text-sm font-medium rounded-md" data-tab="profile">
+                            <i class="fas fa-user mr-2"></i> Profile
+                        </a>
+                        <a href="#" class="nav-link block px-4 py-2 text-sm font-medium rounded-md" data-tab="security">
+                            <i class="fas fa-shield-alt mr-2"></i> Security
+                        </a>
+                        <a href="#" class="nav-link block px-4 py-2 text-sm font-medium rounded-md" data-tab="notifications">
+                            <i class="fas fa-bell mr-2"></i> Notifications
+                        </a>
+                        <!-- <a href="#" class="nav-link block px-4 py-2 text-sm font-medium rounded-md" data-tab="billing">
+                            <i class="fas fa-credit-card mr-2"></i> Billing
+                        </a> -->
+                        <a href="#" class="nav-link block px-4 py-2 text-sm font-medium rounded-md" data-tab="preferences">
+                            <i class="fas fa-cog mr-2"></i> Preferences
+                        </a>
+                        <a href="#" class="nav-link block px-4 py-2 text-sm font-medium rounded-md" data-tab="api">
+                            <i class="fas fa-code mr-2"></i> API Keys
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Settings Content -->
+            <div class="flex-1">
+                <!-- Profile Tab -->
+                <div id="profile-tab" class="settings-tab active">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
+                            <p class="mt-1 text-sm text-gray-500">Update your account's profile information and email address.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4">
+                            <form>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="md:col-span-3">
+                                        <div class="flex items-center space-x-6">
+                                            <div class="avatar-upload">
+                                                <div class="avatar-preview" style="background-image: url('https://randomuser.me/api/portraits/men/32.jpg');"></div>
+                                                <label class="upload-btn">
+                                                    <i class="fas fa-camera"></i>
+                                                    <input type="file" class="hidden" accept="image/*">
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-500">JPG, GIF or PNG. Max size of 2MB</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="md:col-span-1">
+                                        <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+                                        <input type="text" id="first-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="John">
+                                    </div>
+                                    
+                                    <div class="md:col-span-1">
+                                        <label for="last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                                        <input type="text" id="last-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="Doe">
+                                    </div>
+                                    
+                                    <div class="md:col-span-1">
+                                        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                                        <input type="text" id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="johndoe">
+                                    </div>
+                                    
+                                    <div class="md:col-span-2">
+                                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                        <input type="email" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="john.doe@example.com">
+                                    </div>
+                                    
+                                    <div class="md:col-span-1">
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                        <input type="tel" id="phone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value="+1 (555) 123-4567">
+                                    </div>
+                                    
+                                    <div class="md:col-span-3">
+                                        <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                                        <textarea id="bio" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">Crypto enthusiast and investor. Interested in blockchain technology and decentralized finance.</textarea>
+                                    </div>
+                                    
+                                    <div class="md:col-span-3 flex justify-end">
+                                        <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security Tab -->
+                <div id="security-tab" class="settings-tab">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">Security Settings</h2>
+                            <p class="mt-1 text-sm text-gray-500">Manage your account security settings and two-factor authentication.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4 space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900">Password</h3>
+                                    <p class="text-sm text-gray-500">Last changed 3 months ago</p>
+                                </div>
+                                <button class="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                                    Change Password
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
+                                    <p class="text-sm text-gray-500">Add extra security to your account</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="px-2 py-1 text-xs rounded-md security-badge mr-3">Enabled</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-800">
+                                        Manage
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900">Recent Devices</h3>
+                                    <p class="text-sm text-gray-500">Devices that have recently accessed your account</p>
+                                </div>
+                                <button class="text-sm text-blue-600 hover:text-blue-800">
+                                    View All
+                                </button>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900">Account Verification</h3>
+                                        <p class="text-sm text-gray-500">Verify your identity for higher limits</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="px-2 py-1 text-xs rounded-md verification-badge mr-3">Verified</span>
+                                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900">Account Activity</h3>
+                                        <p class="text-sm text-gray-500">Review your recent account activity</p>
+                                    </div>
+                                    <button class="text-sm text-blue-600 hover:text-blue-800">
+                                        View Activity
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900">Delete Account</h3>
+                                        <p class="text-sm text-gray-500">Permanently delete your account and all data</p>
+                                    </div>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700">
+                                        Delete Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications Tab -->
+                <div id="notifications-tab" class="settings-tab">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">Notification Preferences</h2>
+                            <p class="mt-1 text-sm text-gray-500">Manage how you receive notifications from LexBit.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4 space-y-6">
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Email Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="account-activity" class="block text-sm font-medium text-gray-700">Account Activity</label>
+                                            <p class="text-sm text-gray-500">Important notifications about your account</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="account-activity" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="market-updates" class="block text-sm font-medium text-gray-700">Market Updates</label>
+                                            <p class="text-sm text-gray-500">Daily market summaries and price alerts</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="market-updates" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="promotional" class="block text-sm font-medium text-gray-700">Promotional Offers</label>
+                                            <p class="text-sm text-gray-500">Special offers and product updates</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="promotional">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Push Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="price-alerts" class="block text-sm font-medium text-gray-700">Price Alerts</label>
+                                            <p class="text-sm text-gray-500">Get notified when prices reach your targets</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="price-alerts" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="deposit-withdrawals" class="block text-sm font-medium text-gray-700">Deposits & Withdrawals</label>
+                                            <p class="text-sm text-gray-500">Notifications for transactions</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="deposit-withdrawals" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="security-alerts" class="block text-sm font-medium text-gray-700">Security Alerts</label>
+                                            <p class="text-sm text-gray-500">Important security notifications</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="security-alerts" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">SMS Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="sms-2fa" class="block text-sm font-medium text-gray-700">Two-Factor Authentication</label>
+                                            <p class="text-sm text-gray-500">Receive 2FA codes via SMS</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="sms-2fa">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="sms-important" class="block text-sm font-medium text-gray-700">Important Alerts</label>
+                                            <p class="text-sm text-gray-500">Critical account notifications via SMS</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="sms-important">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4 flex justify-end">
+                                <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Billing Tab -->
+                <div id="billing-tab" class="settings-tab">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">Billing Information</h2>
+                            <p class="mt-1 text-sm text-gray-500">Manage your subscription and payment methods.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4 space-y-6">
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900 mb-2">Current Plan</h3>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-medium text-blue-800">Pro Plan</h4>
+                                            <p class="text-sm text-blue-600">$29.99/month</p>
+                                        </div>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">Active</span>
+                                    </div>
+                                    <p class="mt-2 text-sm text-blue-700">Next billing date: May 15, 2023</p>
+                                    <div class="mt-4 flex space-x-3">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                                            Upgrade Plan
+                                        </button>
+                                        <button class="px-3 py-1 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                                            Cancel Subscription
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Payment Methods</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fab fa-cc-visa text-blue-800"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-sm font-medium">Visa ending in 4242</h4>
+                                                <p class="text-xs text-gray-500">Expires 05/2025</p>
+                                            </div>
+                                        </div>
+                                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                                            Edit
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fab fa-paypal text-blue-500"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-sm font-medium">PayPal</h4>
+                                                <p class="text-xs text-gray-500">john.doe@example.com</p>
+                                            </div>
+                                        </div>
+                                        <button class="text-sm text-blue-600 hover:text-blue-800">
+                                            Edit
+                                        </button>
+                                    </div>
+                                    
+                                    <button class="flex items-center text-sm text-blue-600 hover:text-blue-800 mt-2">
+                                        <i class="fas fa-plus mr-1"></i> Add Payment Method
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Billing History</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Apr 15, 2023</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Pro Plan Subscription</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">$29.99</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">Paid</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800">
+                                                    <a href="#">Download</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Mar 15, 2023</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Pro Plan Subscription</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">$29.99</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">Paid</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800">
+                                                    <a href="#">Download</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Feb 15, 2023</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Pro Plan Subscription</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">$29.99</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-green-600">Paid</td>
+                                                <td class="px-3 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800">
+                                                    <a href="#">Download</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <p class="text-sm text-gray-500">Showing 1 to 3 of 3 entries</p>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50" disabled>
+                                            Previous
+                                        </button>
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50" disabled>
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Preferences Tab -->
+                <div id="preferences-tab" class="settings-tab">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">User Preferences</h2>
+                            <p class="mt-1 text-sm text-gray-500">Customize your LexBit experience.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4 space-y-6">
+                            <div>
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Appearance</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="dark-mode" class="block text-sm font-medium text-gray-700">Dark Mode</label>
+                                            <p class="text-sm text-gray-500">Switch between light and dark theme</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="dark-mode">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="compact-mode" class="block text-sm font-medium text-gray-700">Compact Mode</label>
+                                            <p class="text-sm text-gray-500">Use a more compact layout</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="compact-mode">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Language & Region</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
+                                        <select id="language" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                            <option>Chinese</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="timezone" class="block text-sm font-medium text-gray-700">Timezone</label>
+                                        <select id="timezone" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <option>(UTC-05:00) Eastern Time</option>
+                                            <option>(UTC-06:00) Central Time</option>
+                                            <option>(UTC-07:00) Mountain Time</option>
+                                            <option>(UTC-08:00) Pacific Time</option>
+                                            <option>(UTC+00:00) London</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="currency" class="block text-sm font-medium text-gray-700">Display Currency</label>
+                                        <select id="currency" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <option>USD - US Dollar</option>
+                                            <option>EUR - Euro</option>
+                                            <option>GBP - British Pound</option>
+                                            <option>BTC - Bitcoin</option>
+                                            <option>ETH - Ethereum</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="date-format" class="block text-sm font-medium text-gray-700">Date Format</label>
+                                        <select id="date-format" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <option>MM/DD/YYYY</option>
+                                            <option>DD/MM/YYYY</option>
+                                            <option>YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-4">Trading Preferences</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="default-chart" class="block text-sm font-medium text-gray-700">Default Chart Type</label>
+                                            <p class="text-sm text-gray-500">Choose your preferred chart display</p>
+                                        </div>
+                                        <select id="default-chart" class="mt-1 block w-40 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                            <option>Candlestick</option>
+                                            <option>Line</option>
+                                            <option>Bar</option>
+                                            <option>Area</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="order-confirmation" class="block text-sm font-medium text-gray-700">Order Confirmation</label>
+                                            <p class="text-sm text-gray-500">Require confirmation for trades</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="order-confirmation" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label for="price-alerts" class="block text-sm font-medium text-gray-700">Price Alert Sounds</label>
+                                            <p class="text-sm text-gray-500">Play sound for price alerts</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="price-alerts" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4 flex justify-end">
+                                <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Save Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Keys Tab -->
+                <div id="api-tab" class="settings-tab">
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900">API Keys Management</h2>
+                            <p class="mt-1 text-sm text-gray-500">Create and manage your API keys for integration with third-party services.</p>
+                        </div>
+                        
+                        <div class="px-6 py-4 space-y-6">
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700">
+                                            Keep your API keys secure and never share them publicly. Each key has specific permissions - only enable what you need.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-base font-medium text-gray-900">Your API Keys</h3>
+                                <button class="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                                    <i class="fas fa-plus mr-1"></i> Create New Key
+                                </button>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Permissions</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Trading Bot</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">••••••••••••••••</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Trade, Read</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Apr 10, 2023</td>
+                                            <td class="px-3 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs rounded-md bg-green-100 text-green-800">Active</span>
+                                            </td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <button class="text-blue-600 hover:text-blue-800 mr-3">Edit</button>
+                                                <button class="text-red-600 hover:text-red-800">Revoke</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Portfolio Tracker</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">••••••••••••••••</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Read Only</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Mar 22, 2023</td>
+                                            <td class="px-3 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs rounded-md bg-green-100 text-green-800">Active</span>
+                                            </td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <button class="text-blue-600 hover:text-blue-800 mr-3">Edit</button>
+                                                <button class="text-red-600 hover:text-red-800">Revoke</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Old Integration</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">••••••••••••••••</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Trade, Read, Withdraw</td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2023</td>
+                                            <td class="px-3 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs rounded-md bg-red-100 text-red-800">Revoked</span>
+                                            </td>
+                                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <button class="text-blue-600 hover:text-blue-800 mr-3">Edit</button>
+                                                <button class="text-red-600 hover:text-red-800">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <h3 class="text-base font-medium text-gray-900 mb-2">API Documentation</h3>
+                                <p class="text-sm text-gray-500 mb-4">Learn how to integrate with LexBit's API in our developer documentation.</p>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200">
+                                    <i class="fas fa-book mr-1"></i> View Documentation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links and tabs
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.settings-tab').forEach(el => el.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Show corresponding tab
+                const tabId = this.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Avatar upload preview
+        const avatarUpload = document.querySelector('.avatar-upload input');
+        const avatarPreview = document.querySelector('.avatar-preview');
+        
+        avatarUpload.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.style.backgroundImage = `url(${e.target.result})`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Toggle switches
+        document.querySelectorAll('.toggle-switch input').forEach(switchEl => {
+            switchEl.addEventListener('change', function() {
+                // You could add functionality here to save the preference
+                console.log(`${this.id} is now ${this.checked ? 'on' : 'off'}`);
+            });
+        });
+    </script>
+</body>
+</html>

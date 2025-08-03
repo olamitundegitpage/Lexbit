@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Center - LexBit Crypto Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            display: block;
+            transform: translateX(0);
+        }
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+        .menu-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <!-- <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a> -->
+                <a href="aboutUs.html" class="text-gray-600 hover:text-blue-600">About Us</a>
+                <!-- <a href="referral.html" class="text-gray-600 hover:text-blue-600">Referral</a> -->
+                <a href="#testimonies" class="text-gray-600 hover:text-blue-600">Testimonies</a>
+                <a href="support.html" class="text-blue-600 font-medium">Support</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600 relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                </div>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="h-full flex flex-col">
+            <!-- Menu Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button id="close-menu-button" class="text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <!-- <li>
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="aboutUs.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">About Us</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Transactions</span>
+                        </a>
+                    </li> -->
+                    <li>
+                        <a href="#Tesimonies" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Testimonies</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
+                            <i class="fas fa-headset w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Support</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Menu Footer -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-blue-600 relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center cursor-pointer">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">LexBit Support Center</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+                24/7 assistance for all your cryptocurrency investment questions and issues
+            </p>
+        </div>
+    </section>
+
+    <!-- Support Options -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">How Can We Help You?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="support-card bg-gray-50 p-8 rounded-xl shadow-md transition-transform duration-300">
+                    <div class="text-blue-600 text-4xl mb-4">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">FAQs</h3>
+                    <p class="text-gray-700 mb-4">
+                        Find instant answers to common questions about deposits, withdrawals, and account management.
+                    </p>
+                    <a href="#faq-section" class="text-blue-600 font-semibold hover:underline">
+                        Browse FAQs <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="support-card bg-gray-50 p-8 rounded-xl shadow-md transition-transform duration-300">
+                    <div class="text-blue-600 text-4xl mb-4">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Contact Us</h3>
+                    <p class="text-gray-700 mb-4">
+                        Send us a message and our support team will respond within 24 hours.
+                    </p>
+                    <a href="#contact-section" class="text-blue-600 font-semibold hover:underline">
+                        Contact Form <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="support-card bg-gray-50 p-8 rounded-xl shadow-md transition-transform duration-300">
+                    <div class="text-blue-600 text-4xl mb-4">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Live Chat</h3>
+                    <p class="text-gray-700 mb-4">
+                        Get real-time assistance from our support agents (available 24/7).
+                    </p>
+                    <button onclick="openLiveChat()" class="text-blue-600 font-semibold hover:underline">
+                        Start Chat <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq-section" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- Account FAQs -->
+                <h3 class="text-xl font-bold mb-6 text-blue-600 border-b border-blue-200 pb-2">Account Questions</h3>
+                <div class="mb-8">
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>How do I create a LexBit account?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>To create an account:</p>
+                                <ol class="list-decimal pl-5 space-y-2 mt-2">
+                                    <li>Click "Sign Up" on the top right of any page</li>
+                                    <li>Enter your email address and create a strong password</li>
+                                    <li>Verify your email through the confirmation link we send</li>
+                                    <li>Complete your profile with required information</li>
+                                    <li>Set up two-factor authentication for added security</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>How do I reset my password?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>If you've forgotten your password:</p>
+                                <ol class="list-decimal pl-5 space-y-2 mt-2">
+                                    <li>Click "Forgot Password" on the login page</li>
+                                    <li>Enter the email address associated with your account</li>
+                                    <li>Check your email for a password reset link</li>
+                                    <li>Click the link and create a new strong password</li>
+                                    <li>Log in with your new credentials</li>
+                                </ol>
+                                <p class="mt-3 text-sm text-gray-600">If you don't receive the email, check your spam folder or contact support.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deposit/Withdrawal FAQs -->
+                <h3 class="text-xl font-bold mb-6 text-blue-600 border-b border-blue-200 pb-2">Deposits & Withdrawals</h3>
+                <div class="mb-8">
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>How long do deposits take to process?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>Crypto deposits typically require blockchain confirmations:</p>
+                                <ul class="list-disc pl-5 space-y-2 mt-2">
+                                    <li><strong>Bitcoin (BTC):</strong> 3 confirmations (~30 minutes)</li>
+                                    <li><strong>Ethereum (ETH):</strong> 12 confirmations (~5 minutes)</li>
+                                    <li><strong>USDT/USDC:</strong> 12 confirmations (~5 minutes)</li>
+                                    <li><strong>Other coins:</strong> Varies by network</li>
+                                </ul>
+                                <p class="mt-3">Fiat deposits via bank transfer take 1-3 business days.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>Why is my withdrawal pending?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>Withdrawals may be pending for several reasons:</p>
+                                <ul class="list-disc pl-5 space-y-2 mt-2">
+                                    <li><strong>Security hold:</strong> Large withdrawals require manual review (up to 24 hours)</li>
+                                    <li><strong>Incomplete verification:</strong> Verify your identity if prompted</li>
+                                    <li><strong>Network congestion:</strong> Blockchain networks sometimes experience delays</li>
+                                    <li><strong>Scheduled maintenance:</strong> Check our status page for system updates</li>
+                                </ul>
+                                <p class="mt-3">If your withdrawal remains pending beyond expected timeframes, please contact support.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security FAQs -->
+                <h3 class="text-xl font-bold mb-6 text-blue-600 border-b border-blue-200 pb-2">Security</h3>
+                <div>
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>How do I enable two-factor authentication (2FA)?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>To enable 2FA for enhanced security:</p>
+                                <ol class="list-decimal pl-5 space-y-2 mt-2">
+                                    <li>Log in to your LexBit account</li>
+                                    <li>Go to "Security Settings" in your account dashboard</li>
+                                    <li>Click "Enable Two-Factor Authentication"</li>
+                                    <li>Scan the QR code with an authenticator app (Google Authenticator, Authy, etc.)</li>
+                                    <li>Enter the 6-digit code from your authenticator app to verify</li>
+                                    <li>Download and store your backup codes in a secure location</li>
+                                </ol>
+                                <p class="mt-3 text-sm text-gray-600">We strongly recommend enabling 2FA to protect your account.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="accordion-header w-full text-left p-4 bg-white hover:bg-gray-50 font-semibold flex justify-between items-center">
+                            <span>What should I do if I suspect unauthorized access?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </button>
+                        <div class="accordion-content bg-white">
+                            <div class="p-4 pt-0 text-gray-700">
+                                <p>If you suspect unauthorized access to your account:</p>
+                                <ol class="list-decimal pl-5 space-y-2 mt-2">
+                                    <li>Immediately change your password</li>
+                                    <li>Revoke any active sessions in "Security Settings"</li>
+                                    <li>Check your withdrawal history for unauthorized transactions</li>
+                                    <li>Contact LexBit Support immediately</li>
+                                    <li>Enable 2FA if you haven't already</li>
+                                </ol>
+                                <p class="mt-3">Our security team will investigate and help secure your account.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact-section" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-gray-50 rounded-xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/3 gradient-bg text-white p-8">
+                        <h2 class="text-2xl font-bold mb-4">Contact Support</h2>
+                        <p class="mb-6">Can't find what you're looking for? Our team is ready to help.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="text-white text-xl mr-4 mt-1">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Email Us</h3>
+                                    <p>support@lexbit.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="text-white text-xl mr-4 mt-1">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Call Us</h3>
+                                    <p>+1 (800) 123-4567</p>
+                                    <p class="text-sm">24/7 Support</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="text-white text-xl mr-4 mt-1">
+                                    <i class="fab fa-telegram"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold">Telegram</h3>
+                                    <p>@LexBitSupport</p>
+                                    <p class="text-sm">Live chat available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-2/3 p-8">
+                        <h3 class="text-xl font-bold mb-6">Send Us a Message</h3>
+                        <form id="support-form">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <select id="subject" name="subject" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="" disabled selected>Select a topic</option>
+                                    <option value="account">Account Issues</option>
+                                    <option value="deposit">Deposit Problems</option>
+                                    <option value="withdrawal">Withdrawal Questions</option>
+                                    <option value="investment">Investment Plans</option>
+                                    <option value="security">Security Concerns</option>
+                                    <option value="other">Other Inquiry</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 font-semibold">
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">L</div>
+                        <span class="ml-2 text-xl font-bold text-white">Lexbit</span>
+                    </div>
+                    <p class="text-sm">
+                        Secure cryptocurrency investment platform with transparent returns since 2018.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="hover:text-white">Home</a></li>
+                        <li><a href="investmentplan.html" class="hover:text-white">Investment Plans</a></li>
+                        <li><a href="about.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Risk Disclosure</a></li>
+                        <li><a href="#" class="hover:text-white">AML Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Connect</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-telegram"></i></a>
+                    </div>
+                    <p class="text-sm">
+                        support@lexbit.com<br>
+                        
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                © 2023 Lexbit. All rights reserved. Cryptocurrency investments involve risk. Past performance is not indicative of future results.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', toggleMobileMenu);
+        menuOverlay.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking on a menu item
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        // Accordion functionality for FAQs
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const accordionItem = header.parentElement;
+                const accordionContent = header.nextElementSibling;
+                const icon = header.querySelector('i');
+                
+                // Toggle the active class on the accordion item
+                accordionItem.classList.toggle('active');
+                
+                // Toggle the icon rotation
+                icon.classList.toggle('transform');
+                icon.classList.toggle('rotate-180');
+                
+                // Toggle the content visibility
+                if (accordionContent.style.maxHeight) {
+                    accordionContent.style.maxHeight = null;
+                } else {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('support-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            // Here you would typically send the data to your server
+            // For demo purposes, we'll just show an alert
+            alert(`Thank you, ${name}! Your support request has been submitted. We'll respond to ${email} regarding "${subject}" within 24 hours.`);
+            
+            // Reset the form
+            this.reset();
+        });
+
+        // Live chat simulation
+        function openLiveChat() {
+            alert("Opening live chat window... Our support agents are available 24/7 to assist you.");
+        }
+    </script>
+</body>
+</html>
