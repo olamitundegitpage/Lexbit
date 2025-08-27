@@ -86,9 +86,79 @@
             background-color: #EDE9FE;
             color: #5B21B6;
         }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-container {
+            display: none;
+            background-color: #fee;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-96">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Admin Login</h2>
+                <button id="close-auth-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-email">
+                        Email
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                           id="login-email" type="email" placeholder="Email" required value="admin@lexbit.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="login-password">
+                        Password
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                           id="login-password" type="password" placeholder="Password" required value="password123">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full flex justify-center items-center" 
+                            type="submit" id="login-button">
+                        <span id="login-button-text">Sign In</span>
+                        <div id="login-spinner" class="loading-spinner ml-2" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+            <div id="login-message" class="mt-4 p-3 rounded hidden"></div>
+        </div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error-container" class="error-container fixed top-4 right-4 w-96 z-50 hidden">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="font-bold text-red-700" id="error-title">Error</h3>
+                <p id="error-message" class="text-red-600 mt-1"></p>
+            </div>
+            <button id="close-error" class="text-red-700 hover:text-red-900">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar fixed inset-y-0 left-0 bg-white shadow-md w-64 z-20">
         <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
@@ -121,7 +191,7 @@
                             <i class="fas fa-users"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Users</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">15</span>
+                        <span id="user-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -130,7 +200,7 @@
                             <i class="fas fa-wallet"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Transactions</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">24</span>
+                        <span id="transaction-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -169,7 +239,7 @@
                             <i class="fas fa-bell"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">3</span>
+                        <span id="notification-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -197,7 +267,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
                         </div>
-                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search transactions...">
+                        <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search transactions...">
                     </div>
                 </div>
                 
@@ -215,13 +285,13 @@
                         <div>
                             <button class="flex text-sm rounded-full focus:outline-none">
                                 <span class="sr-only">Open user menu</span>
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+                                <div id="user-avatar" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
                             </button>
                         </div>
                         <div class="dropdown-content mt-2 w-48 bg-white rounded-md shadow-lg py-1">
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                            <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                         </div>
                     </div>
                 </div>
@@ -251,7 +321,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Transactions</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">$248,750</p>
+                            <p id="total-transactions" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="bg-blue-100 p-3 rounded-full">
                             <i class="fas fa-exchange-alt text-blue-600 text-xl"></i>
@@ -266,7 +336,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Deposits</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">$142,500</p>
+                            <p id="total-deposits" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="bg-green-100 p-3 rounded-full">
                             <i class="fas fa-arrow-down text-green-600 text-xl"></i>
@@ -281,7 +351,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Withdrawals</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">$86,250</p>
+                            <p id="total-withdrawals" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="bg-red-100 p-3 rounded-full">
                             <i class="fas fa-arrow-up text-red-600 text-xl"></i>
@@ -296,7 +366,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Pending Transactions</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">$20,000</p>
+                            <p id="pending-transactions" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="bg-yellow-100 p-3 rounded-full">
                             <i class="fas fa-clock text-yellow-600 text-xl"></i>
@@ -355,7 +425,7 @@
                         </select>
                     </div>
                     <div class="flex items-end">
-                        <button class="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button id="apply-filters" class="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-filter mr-2"></i>Apply Filters
                         </button>
                     </div>
@@ -367,7 +437,7 @@
                 <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h2 class="text-lg font-medium text-gray-900">All Transactions</h2>
                     <div class="flex items-center">
-                        <span class="text-sm text-gray-500 mr-3">Showing 1 to 10 of 24 transactions</span>
+                        <span id="showing-text" class="text-sm text-gray-500 mr-3">Loading transactions...</span>
                         <button class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none">
                             <i class="fas fa-chevron-left"></i>
                         </button>
@@ -390,356 +460,12 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1001</div>
-                                    <div class="text-sm text-gray-500">Investment</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">John Smith</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-investment">Investment</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $10,000.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Bank Transfer
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 15, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-completed">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1002</div>
-                                    <div class="text-sm text-gray-500">Deposit</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Sarah Johnson</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-deposit">Deposit</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $5,000.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Credit Card
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 14, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-completed">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1003</div>
-                                    <div class="text-sm text-gray-500">Withdrawal</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/75.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Michael Brown</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-withdrawal">Withdrawal</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $2,500.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Bank Transfer
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 13, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-pending">Pending</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1004</div>
-                                    <div class="text-sm text-gray-500">Profit</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/68.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Emily Davis</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-profit">Profit</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $375.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    System
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 12, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-completed">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1005</div>
-                                    <div class="text-sm text-gray-500">Bonus</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/22.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Robert Wilson</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-bonus">Bonus</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $100.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    System
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 11, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-completed">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1006</div>
-                                    <div class="text-sm text-gray-500">Deposit</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/32.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Jennifer Lee</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-deposit">Deposit</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $3,000.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Cryptocurrency
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 10, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-processing">Processing</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1007</div>
-                                    <div class="text-sm text-gray-500">Withdrawal</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/men/64.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">David Miller</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-withdrawal">Withdrawal</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $1,200.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    PayPal
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 9, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-failed">Failed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900">
-                                            <i class="fas fa-redo"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#TXN-1008</div>
-                                    <div class="text-sm text-gray-500">Investment</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/12.jpg" alt="User avatar">
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Lisa Taylor</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="type-badge type-investment">Investment</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $25,000.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Bank Transfer
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    Jun 8, 2023
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-completed">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-yellow-600 hover:text-yellow-900">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
+                        <tbody id="transactions-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="8" class="px-6 py-8 text-center">
+                                    <div class="flex justify-center items-center">
+                                        <div class="loading-spinner"></div>
+                                        <span class="ml-2">Loading transactions...</span>
                                     </div>
                                 </td>
                             </tr>
@@ -757,8 +483,8 @@
                     </div>
                     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium">1</span> to <span class="font-medium">8</span> of <span class="font-medium">24</span> results
+                            <p id="pagination-info" class="text-sm text-gray-700">
+                                Loading transactions...
                             </p>
                         </div>
                         <div>
@@ -832,67 +558,685 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarClose = document.getElementById('sidebar-close');
+        // API Configuration
+        const API_BASE_URL = 'https://lexbit.onrender.com';
         
-        function toggleSidebar() {
-            sidebar.classList.toggle('sidebar-collapsed');
-            mainContent.classList.toggle('content-expanded');
+        // DOM Elements
+        const authModal = document.getElementById('auth-modal');
+        const closeAuthModalBtn = document.getElementById('close-auth-modal');
+        const loginForm = document.getElementById('login-form');
+        const loginMessage = document.getElementById('login-message');
+        const loginButton = document.getElementById('login-button');
+        const loginButtonText = document.getElementById('login-button-text');
+        const loginSpinner = document.getElementById('login-spinner');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const errorContainer = document.getElementById('error-container');
+        const errorTitle = document.getElementById('error-title');
+        const errorMessage = document.getElementById('error-message');
+        const closeErrorBtn = document.getElementById('close-error');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        
+        // State variables
+        let authToken = localStorage.getItem('authToken');
+        let userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        let allTransactions = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Check if user is authenticated
+        if (!authToken) {
+            authModal.classList.remove('hidden');
+        } else {
+            // Update UI with user data
+            updateUserUI();
+            // Load transactions
+            loadTransactions();
         }
         
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarClose.addEventListener('click', toggleSidebar);
+        // Update UI with user data
+        function updateUserUI() {
+            if (userData.first_name) {
+                const firstName = userData.first_name;
+                userAvatar.textContent = firstName.charAt(0).toUpperCase();
+            }
+        }
         
-        // Close sidebar when clicking outside (on mobile)
-        document.addEventListener('click', function(event) {
-            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
-                event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
-                if (!sidebar.classList.contains('sidebar-collapsed')) {
-                    toggleSidebar();
-                }
+        // Show error message
+        function showError(title, message) {
+            errorTitle.textContent = title;
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('hidden');
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                errorContainer.classList.add('hidden');
+            }, 10000);
+        }
+        
+        // Close error message
+        closeErrorBtn.addEventListener('click', () => {
+            errorContainer.classList.add('hidden');
+        });
+        
+        // Close modal when clicking on X
+        closeAuthModalBtn.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === authModal) {
+                authModal.classList.add('hidden');
             }
         });
-
-        // Set active menu item
-        const menuItems = document.querySelectorAll('#sidebar ul li a');
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                menuItems.forEach(i => i.classList.remove('active-menu'));
-                this.classList.add('active-menu');
+        
+        // Handle login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Show loading state
+            loginButton.disabled = true;
+            loginButtonText.textContent = 'Signing in...';
+            loginSpinner.style.display = 'inline-block';
+            loginMessage.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
                 
-                // Close sidebar on mobile after selection
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save token and user data
+                    authToken = data.data.access_token;
+                    userData = { email, first_name: email.split('@')[0] };
+                    
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    // Show success message
+                    loginMessage.textContent = 'Login successful! Redirecting...';
+                    loginMessage.classList.remove('hidden');
+                    loginMessage.classList.add('bg-green-100', 'text-green-700');
+                    
+                    // Update UI and close modal after delay
+                    setTimeout(() => {
+                        authModal.classList.add('hidden');
+                        updateUserUI();
+                        loadTransactions();
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                loginMessage.textContent = error.message || 'An error occurred during login';
+                loginMessage.classList.remove('hidden');
+                loginMessage.classList.add('bg-red-100', 'text-red-700');
+            } finally {
+                // Reset loading state
+                loginButton.disabled = false;
+                loginButtonText.textContent = 'Sign In';
+                loginSpinner.style.display = 'none';
+            }
+        });
+        
+        // Handle logout
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authToken = null;
+            userData = {};
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            authModal.classList.remove('hidden');
+            
+            // Clear transactions data
+            document.getElementById('total-transactions').textContent = 'Loading...';
+            document.getElementById('total-deposits').textContent = 'Loading...';
+            document.getElementById('total-withdrawals').textContent = 'Loading...';
+            document.getElementById('pending-transactions').textContent = 'Loading...';
+            
+            const transactionsContainer = document.getElementById('transactions-table-body');
+            transactionsContainer.innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-6 py-8 text-center">
+                        <div class="flex justify-center items-center">
+                            <div class="loading-spinner"></div>
+                            <span class="ml-2">Please log in to view transactions</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        // Function to format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount || 0);
+        }
+        
+        // Function to format date from timestamp
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+        
+        // Function to format date and time from timestamp
+        function formatDateTime(timestamp) {
+            if (!timestamp) return 'Unknown';
+            return new Date(timestamp * 1000).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Function to fetch transactions from API
+        async function fetchTransactions() {
+            try {
+                // This endpoint might need to be adjusted based on your actual API
+                const response = await fetch(`${API_BASE_URL}/admin/history?page=${currentPage}&limit=${itemsPerPage}&sort_by=created_at&sort_order=desc`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expired or invalid
+                        localStorage.removeItem('authToken');
+                        authToken = null;
+                        authModal.classList.remove('hidden');
+                        throw new Error('Session expired. Please log in again.');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.transactions || [];
+                
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+                throw error;
+            }
+        }
+        
+        // Function to fetch pending transactions
+        async function fetchPendingTransactions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/pending-transactions?page=${currentPage}&limit=${itemsPerPage}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data.transactions || [];
+                
+            } catch (error) {
+                console.error('Error fetching pending transactions:', error);
+                throw error;
+            }
+        }
+        
+        // Function to approve/decline transaction
+        async function updateTransactionStatus(transactionId, action, adminNotes = '') {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/approve-decline`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        transaction_id: transactionId,
+                        action: action,
+                        admin_notes: adminNotes
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data;
+                
+            } catch (error) {
+                console.error('Error updating transaction status:', error);
+                throw error;
+            }
+        }
+        
+        // Function to calculate transaction statistics
+        function calculateTransactionStats(transactions) {
+            const totalTransactions = transactions.length;
+            const totalDeposits = transactions
+                .filter(t => t.type === 'deposit')
+                .reduce((sum, t) => sum + (t.amount || 0), 0);
+            const totalWithdrawals = transactions
+                .filter(t => t.type === 'withdrawal')
+                .reduce((sum, t) => sum + (t.amount || 0), 0);
+            const pendingTransactions = transactions
+                .filter(t => t.status === 'pending')
+                .reduce((sum, t) => sum + (t.amount || 0), 0);
+            
+            return {
+                totalTransactions,
+                totalDeposits,
+                totalWithdrawals,
+                pendingTransactions
+            };
+        }
+        
+        // Function to update transaction statistics
+        function updateTransactionStats(stats) {
+            document.getElementById('total-transactions').textContent = formatCurrency(stats.totalTransactions);
+            document.getElementById('total-deposits').textContent = formatCurrency(stats.totalDeposits);
+            document.getElementById('total-withdrawals').textContent = formatCurrency(stats.totalWithdrawals);
+            document.getElementById('pending-transactions').textContent = formatCurrency(stats.pendingTransactions);
+            document.getElementById('transaction-count').textContent = stats.totalTransactions;
+        }
+        
+        // Function to render transactions table
+        function renderTransactionsTable(transactions) {
+            const tbody = document.getElementById('transactions-table-body');
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                            No transactions found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                // Generate avatar based on user ID or name
+                const avatarLetter = transaction.user_name ? transaction.user_name.charAt(0).toUpperCase() : 'U';
+                const avatarColor = getAvatarColor(transaction.user_name);
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${transaction.id || 'N/A'}</div>
+                        <div class="text-sm text-gray-500">${transaction.description || 'No description'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8">
+                                <div class="h-8 w-8 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold">
+                                    ${avatarLetter}
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${transaction.user_name || 'Unknown User'}</div>
+                                <div class="text-sm text-gray-500">${transaction.user_email || 'No email'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="type-badge type-${transaction.type || 'unknown'}">${transaction.type ? transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) : 'Unknown'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${formatCurrency(transaction.amount)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${transaction.method || 'Unknown'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${formatDateTime(transaction.created_at)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge status-${transaction.status || 'unknown'}">${transaction.status ? transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1) : 'Unknown'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button class="text-blue-600 hover:text-blue-900 view-transaction" data-transaction-id="${transaction.id}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${transaction.status === 'pending' ? 
+                                `<button class="text-green-600 hover:text-green-900 approve-transaction" data-transaction-id="${transaction.id}">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 reject-transaction" data-transaction-id="${transaction.id}">
+                                    <i class="fas fa-times"></i>
+                                </button>` : 
+                                `<button class="text-yellow-600 hover:text-yellow-900 edit-transaction" data-transaction-id="${transaction.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900 delete-transaction" data-transaction-id="${transaction.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>`
+                            }
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Add event listeners to buttons
+            addTransactionActionListeners();
+            
+            // Update showing text and pagination info
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(startIndex + itemsPerPage - 1, allTransactions.length);
+            document.getElementById('showing-text').textContent = `Showing ${startIndex} to ${endIndex} of ${allTransactions.length} transactions`;
+            document.getElementById('pagination-info').innerHTML = `Showing <span class="font-medium">${startIndex}</span> to <span class="font-medium">${endIndex}</span> of <span class="font-medium">${allTransactions.length}</span> results`;
+        }
+        
+        // Helper function for avatar colors
+        function getAvatarColor(name) {
+            if (!name) return 'bg-blue-500';
+            const colors = [
+                'bg-blue-500', 'bg-green-500', 'bg-red-500', 
+                'bg-yellow-500', 'bg-purple-500', 'bg-pink-500'
+            ];
+            const index = name.charCodeAt(0) % colors.length;
+            return colors[index];
+        }
+        
+        // Function to add event listeners to transaction action buttons
+        function addTransactionActionListeners() {
+            // View transaction
+            document.querySelectorAll('.view-transaction').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-transaction-id');
+                    viewTransaction(transactionId);
+                });
+            });
+            
+            // Approve transaction
+            document.querySelectorAll('.approve-transaction').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-transaction-id');
+                    approveTransaction(transactionId);
+                });
+            });
+            
+            // Reject transaction
+            document.querySelectorAll('.reject-transaction').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-transaction-id');
+                    rejectTransaction(transactionId);
+                });
+            });
+            
+            // Edit transaction
+            document.querySelectorAll('.edit-transaction').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-transaction-id');
+                    editTransaction(transactionId);
+                });
+            });
+            
+            // Delete transaction
+            document.querySelectorAll('.delete-transaction').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-transaction-id');
+                    deleteTransaction(transactionId);
+                });
+            });
+        }
+        
+        // Transaction action functions
+        function viewTransaction(transactionId) {
+            alert(`View transaction details for ID: ${transactionId}`);
+        }
+        
+        async function approveTransaction(transactionId) {
+            if (confirm(`Are you sure you want to approve transaction ${transactionId}?`)) {
+                try {
+                    const result = await updateTransactionStatus(transactionId, 'approve', 'Transaction approved by admin');
+                    alert(`Transaction ${transactionId} approved successfully!`);
+                    loadTransactions();
+                } catch (error) {
+                    showError('Approval Error', `Failed to approve transaction: ${error.message}`);
+                }
+            }
+        }
+        
+        async function rejectTransaction(transactionId) {
+            if (confirm(`Are you sure you want to reject transaction ${transactionId}?`)) {
+                try {
+                    const result = await updateTransactionStatus(transactionId, 'decline', 'Transaction rejected by admin');
+                    alert(`Transaction ${transactionId} rejected successfully!`);
+                    loadTransactions();
+                } catch (error) {
+                    showError('Rejection Error', `Failed to reject transaction: ${error.message}`);
+                }
+            }
+        }
+        
+        function editTransaction(transactionId) {
+            alert(`Edit transaction functionality for ID: ${transactionId} would be implemented here.`);
+        }
+        
+        function deleteTransaction(transactionId) {
+            if (confirm(`Are you sure you want to delete transaction ${transactionId}? This action cannot be undone.`)) {
+                alert(`Transaction ${transactionId} deleted successfully!`);
+                loadTransactions();
+            }
+        }
+        
+        // Filter functionality
+        function applyFilters() {
+            const typeFilter = document.getElementById('type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const methodFilter = document.getElementById('method-filter').value;
+            const dateRange = document.getElementById('date-range').value;
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            // Apply filters to allTransactions
+            const filteredTransactions = allTransactions.filter(transaction => {
+                // Type filter
+                if (typeFilter !== 'all' && transaction.type !== typeFilter) return false;
+                
+                // Status filter
+                if (statusFilter !== 'all' && transaction.status !== statusFilter) return false;
+                
+                // Method filter
+                if (methodFilter !== 'all' && transaction.method && transaction.method.toLowerCase() !== methodFilter.toLowerCase()) return false;
+                
+                // Date filter (simplified)
+                if (dateRange !== 'all' && transaction.created_at) {
+                    const now = Math.floor(Date.now() / 1000);
+                    let timeAgo;
+                    
+                    switch(dateRange) {
+                        case 'today':
+                            timeAgo = now - (24 * 60 * 60);
+                            break;
+                        case 'week':
+                            timeAgo = now - (7 * 24 * 60 * 60);
+                            break;
+                        case 'month':
+                            timeAgo = now - (30 * 24 * 60 * 60);
+                            break;
+                        case 'year':
+                            timeAgo = now - (365 * 24 * 60 * 60);
+                            break;
+                        default:
+                            timeAgo = 0;
+                    }
+                    
+                    if (transaction.created_at < timeAgo) return false;
+                }
+                
+                // Search filter
+                if (searchTerm) {
+                    const searchableText = `${transaction.id || ''} ${transaction.user_name || ''} ${transaction.user_email || ''} ${transaction.description || ''} ${transaction.method || ''}`.toLowerCase();
+                    if (!searchableText.includes(searchTerm)) return false;
+                }
+                
+                return true;
+            });
+            
+            renderTransactionsTable(filteredTransactions);
+            updateTransactionStats(calculateTransactionStats(filteredTransactions));
+        }
+        
+        // Load transactions
+        async function loadTransactions() {
+            try {
+                // Show loading state
+                const tbody = document.getElementById('transactions-table-body');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-8 text-center">
+                            <div class="flex justify-center items-center">
+                                <div class="loading-spinner"></div>
+                                <span class="ml-2">Loading transactions...</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                
+                // Fetch transactions
+                allTransactions = await fetchTransactions();
+                
+                // Calculate and update statistics
+                const stats = calculateTransactionStats(allTransactions);
+                updateTransactionStats(stats);
+                
+                // Render transactions table
+                renderTransactionsTable(allTransactions);
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showError('Loading Error', `Failed to load transactions: ${error.message}`);
+                
+                const tbody = document.getElementById('transactions-table-body');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-4 text-center text-red-600">
+                            Failed to load transactions. Please check your connection.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup event listeners
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('type-filter').addEventListener('change', applyFilters);
+            document.getElementById('status-filter').addEventListener('change', applyFilters);
+            document.getElementById('method-filter').addEventListener('change', applyFilters);
+            document.getElementById('date-range').addEventListener('change', applyFilters);
+            
+            // Existing sidebar functionality
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarClose = document.getElementById('sidebar-close');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                mainContent.classList.toggle('content-expanded');
+            }
+            
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarClose.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside (on mobile)
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
+                    event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
+                    if (!sidebar.classList.contains('sidebar-collapsed')) {
+                        toggleSidebar();
+                    }
+                }
+            });
+            
+            // Set active menu item
+            const menuItems = document.querySelectorAll('#sidebar ul li a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active-menu'));
+                    this.classList.add('active-menu');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+            
+            // Initialize dropdowns
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                        dropdown.style.display = 'none';
+                    });
+                }
+            });
+            
+            // Show dropdown when clicking on profile
+            document.querySelector('.dropdown button').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentNode.querySelector('.dropdown-content');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('sidebar-collapsed');
+                    mainContent.classList.remove('content-expanded');
                 }
             });
         });
-
-        // Initialize dropdowns
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-                    dropdown.style.display = 'none';
-                });
-            }
-        });
-
-        // Show dropdown when clicking on profile
-        document.querySelector('.dropdown button').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = this.parentNode.querySelector('.dropdown-content');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
         
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('sidebar-collapsed');
-                mainContent.classList.remove('content-expanded');
-            }
-        });
+        // Debounce function for search
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
     </script>
 </body>
 </html>

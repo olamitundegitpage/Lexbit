@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,9 +122,85 @@
                 transform: translateX(100%);
             }
         }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success {
+            background-color: #10b981;
+        }
+        .toast.error {
+            background-color: #ef4444;
+        }
+        .toast.warning {
+            background-color: #f59e0b;
+        }
+        
+        .user-welcome {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .user-corner {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- User Corner Display -->
+    <div id="user-corner" class="user-corner" style="display: none;">
+        <div id="corner-user-avatar" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">U</div>
+        <div>
+            <p class="text-sm font-medium text-gray-800" id="corner-user-name">User</p>
+            <p class="text-xs text-gray-500">Making deposit</p>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -135,7 +212,7 @@
                 <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
                 <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
                 <a href="referral.html" class="text-gray-600 hover:text-blue-600">Referral</a>
-                <a href="transactions.html" class="text-blue-600 font-medium">Transactions</a>
+                <a href="transactions.html" class="text-gray-600 font-medium">Transactions</a>
             </div>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-600 hover:text-blue-600 relative">
@@ -143,7 +220,7 @@
                     <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
                 <div class="flex items-center cursor-pointer">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    <div id="user-avatar" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">U</div>
                 </div>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-gray-600">
@@ -205,7 +282,7 @@
                         <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                     </button>
                     <div class="flex items-center cursor-pointer">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                        <div id="mobile-user-avatar" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">U</div>
                     </div>
                 </div>
             </div>
@@ -219,6 +296,12 @@
         <div class="text-center mb-8">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Crypto Deposit</h1>
             <p class="text-gray-600">Add cryptocurrency to your Lexbit wallet</p>
+        </div>
+
+        <!-- User Welcome Section -->
+        <div id="user-welcome" class="user-welcome mb-6">
+            <p class="text-blue-700 font-medium">Welcome, <span id="user-name">User</span>!</p>
+            <p class="text-sm text-blue-600">You are about to make a deposit to your LexBit account.</p>
         </div>
 
         <!-- Deposit Steps -->
@@ -255,7 +338,6 @@
                             <option value="usdc">USD Coin (USDC)</option>
                             <option value="bnb">BNB</option>
                             <option value="sol">Solana</option>
-                            <!-- <option value="ltc">Litecoin (LTC)</option> -->
                         </select>
                     </div>
                     
@@ -271,6 +353,7 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800">Deposit Details</h3>
                         <p class="text-gray-600"><span id="selected-amount">$100.00</span> worth of <span id="selected-crypto">Bitcoin (BTC)</span></p>
+                        <p class="text-sm text-blue-600 mt-1">Depositing as: <span id="deposit-user-name">User</span></p>
                     </div>
                     <button id="back-button" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="fas fa-arrow-left mr-1"></i> Back
@@ -358,36 +441,10 @@
             <div class="p-6 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">Recent Crypto Deposits</h2>
             </div>
-            <div class="divide-y divide-gray-200">
-                <div class="p-4 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC" class="w-8 h-8 mr-3">
-                        <div>
-                            <p class="font-medium">0.025 BTC</p>
-                            <p class="text-sm text-gray-500">Jun 10, 2023</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-medium text-green-600">Completed</span>
-                </div>
-                <div class="p-4 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" class="w-8 h-8 mr-3">
-                        <div>
-                            <p class="font-medium">0.5 ETH</p>
-                            <p class="text-sm text-gray-500">Jun 5, 2023</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-medium text-green-600">Completed</span>
-                </div>
-                <div class="p-4 flex justify-between items-center">
-                    <div class="flex items-center">
-                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" class="w-8 h-8 mr-3">
-                        <div>
-                            <p class="font-medium">1,000 USDT</p>
-                            <p class="text-sm text-gray-500">May 28, 2023</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-medium text-green-600">Completed</span>
+            <div id="recent-deposits" class="divide-y divide-gray-200">
+                <div class="p-6 text-center">
+                    <div class="loading-spinner"></div>
+                    <p class="text-gray-500 mt-2">Loading transaction history...</p>
                 </div>
             </div>
         </div>
@@ -401,12 +458,6 @@
                     <i class="fas fa-coins text-2xl text-yellow-400"></i>
                     <a href="#"><h1 class="text-2xl font-bold">LexBit</h1></a>
                 </div>
-                <!-- <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                </div> -->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
                 © 2025 Lexbit. All rights reserved.
@@ -415,6 +466,232 @@
     </footer>
 
     <script>
+        // API Configuration
+        const BASE_URL = 'https://lexbit.onrender.com';
+        const LOGIN_API_URL = `${BASE_URL}/login`;
+        const DEPOSIT_API_URL = `${BASE_URL}/deposit`;
+        const HISTORY_API_URL = `${BASE_URL}/history`;
+        
+        // Get authentication token
+        let accessToken = localStorage.getItem('access_token');
+        let userId = null;
+        let userName = 'User';
+        let userEmail = '';
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Function to handle user login
+        async function handleLogin() {
+            try {
+                if (!accessToken) {
+                    showToast('Please log in to access this page', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    return false;
+                }
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Please log in to access this page', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return false;
+            }
+        }
+        
+        // Function to extract user info from JWT token
+        function getUserInfoFromToken(token) {
+            try {
+                if (!token) return null;
+                
+                // JWT token is in format: header.payload.signature
+                const payload = token.split('.')[1];
+                const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+                const userInfo = JSON.parse(decodedPayload);
+                
+                return userInfo;
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                return null;
+            }
+        }
+        
+        // Function to update user interface with user information
+        function updateUserUI(userInfo) {
+            if (userInfo && userInfo.email) {
+                userEmail = userInfo.email;
+                userName = userEmail.split('@')[0]; // Use email prefix as name
+                
+                // Update all user name displays
+                document.getElementById('user-name').textContent = userName;
+                document.getElementById('deposit-user-name').textContent = userName;
+                document.getElementById('corner-user-name').textContent = userName;
+                
+                // Update user avatar with initials
+                const initials = userName.charAt(0).toUpperCase();
+                document.getElementById('user-avatar').textContent = initials;
+                document.getElementById('mobile-user-avatar').textContent = initials;
+                document.getElementById('corner-user-avatar').textContent = initials;
+                
+                // Show the user corner
+                document.getElementById('user-corner').style.display = 'flex';
+            }
+        }
+        
+        // // Function to fetch transaction history
+        // async function fetchTransactionHistory() {
+        //     try {
+        //         if (!accessToken) {
+        //             showToast('Please log in to view transaction history', 'error');
+        //             return;
+        //         }
+                
+        //         // Build query parameters for the history API
+        //         const params = new URLSearchParams({
+        //             status: 'approved',
+        //             transaction_type: 'deposit',
+        //             from_date: '2025-08-29',
+        //             to_date: '2027-12-20',
+        //             min_amount: '100',
+        //             max_amount: '100000',
+        //             page: '1',
+        //             limit: '10',
+        //             sort_by: 'created_at',
+        //             sort_order: 'desc'
+        //         });
+                
+        //         const response = await fetch(`${HISTORY_API_URL}?${params}`, {
+        //             method: 'GET',
+        //             headers: {
+        //                 'Authorization': `Bearer ${accessToken}`,
+        //                 'accept': 'application/json'
+        //             }
+        //         });
+                
+        //         if (response.ok) {
+        //             const historyData = await response.json();
+        //             updateTransactionHistory(historyData);
+        //         } else if (response.status === 401) {
+        //             showToast('Session expired. Please log in again.', 'error');
+        //             localStorage.removeItem('access_token');
+        //         } else {
+        //             showToast('Unable to load transaction history', 'error');
+        //             showPlaceholderTransactions();
+        //         }
+        //     } catch (error) {
+        //         console.error('Error fetching transaction history:', error);
+        //         showToast('Error loading transaction history', 'error');
+        //         showPlaceholderTransactions();
+        //     }
+        // }
+        
+        // // Function to show placeholder transactions when API fails
+        // function showPlaceholderTransactions() {
+        //     const historyContainer = document.getElementById('recent-deposits');
+        //     if (!historyContainer) return;
+            
+        //     historyContainer.innerHTML = `
+        //         <div class="p-4 flex justify-between items-center">
+        //             <div class="flex items-center">
+        //                 <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="BTC" class="w-8 h-8 mr-3">
+        //                 <div>
+        //                     <p class="font-medium">0.025 BTC</p>
+        //                     <p class="text-sm text-gray-500">Jun 10, 2023</p>
+        //                 </div>
+        //             </div>
+        //             <span class="text-sm font-medium text-green-600">Completed</span>
+        //         </div>
+        //         <div class="p-4 flex justify-between items-center">
+        //             <div class="flex items-center">
+        //                 <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="ETH" class="w-8 h-8 mr-3">
+        //                 <div>
+        //                     <p class="font-medium">0.5 ETH</p>
+        //                     <p class="text-sm text-gray-500">Jun 5, 2023</p>
+        //                 </div>
+        //             </div>
+        //             <span class="text-sm font-medium text-green-600">Completed</span>
+        //         </div>
+        //         <div class="p-4 flex justify-between items-center">
+        //             <div class="flex items-center">
+        //                 <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" class="w-8 h-8 mr-3">
+        //                 <div>
+        //                     <p class="font-medium">1,000 USDT</p>
+        //                     <p class="text-sm text-gray-500">May 28, 2023</p>
+        //                 </div>
+        //             </div>
+        //             <span class="text-sm font-medium text-green-600">Completed</span>
+        //         </div>
+        //     `;
+        // }
+        
+        // // Function to update transaction history in UI
+        // function updateTransactionHistory(historyData) {
+        //     const historyContainer = document.getElementById('recent-deposits');
+        //     if (!historyContainer) return;
+            
+        //     // Clear existing content
+        //     historyContainer.innerHTML = '';
+            
+        //     // Check if we have valid data structure
+        //     if (historyData && Array.isArray(historyData)) {
+        //         if (historyData.length === 0) {
+        //             historyContainer.innerHTML = `
+        //                 <div class="p-6 text-center">
+        //                     <p class="text-gray-500">No recent deposits found.</p>
+        //                 </div>
+        //             `;
+        //             return;
+        //         }
+                
+        //         // Add real transaction data
+        //         historyData.forEach(transaction => {
+        //             const transactionEl = document.createElement('div');
+        //             transactionEl.className = 'p-4 flex justify-between items-center';
+                    
+        //             // Format amount and currency
+        //             const amount = transaction.amount || 0;
+        //             const currency = transaction.currency || 'USD';
+        //             const date = transaction.created_at ? new Date(transaction.created_at * 1000).toLocaleDateString() : 'Unknown date';
+                    
+        //             // Get appropriate crypto logo
+        //             let logoUrl = 'https://cryptologos.cc/logos/bitcoin-btc-logo.png';
+        //             if (currency.toLowerCase() === 'eth') logoUrl = 'https://cryptologos.cc/logos/ethereum-eth-logo.png';
+        //             if (currency.toLowerCase() === 'usdt') logoUrl = 'https://cryptologos.cc/logos/tether-usdt-logo.png';
+        //             if (currency.toLowerCase() === 'usdc') logoUrl = 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png';
+        //             if (currency.toLowerCase() === 'bnb') logoUrl = 'https://cryptologos.cc/logos/bnb-bnb-logo.png';
+                    
+        //             transactionEl.innerHTML = `
+        //                 <div class="flex items-center">
+        //                     <img src="${logoUrl}" alt="${currency}" class="w-8 h-8 mr-3">
+        //                     <div>
+        //                         <p class="font-medium">${amount} ${currency}</p>
+        //                         <p class="text-sm text-gray-500">${date}</p>
+        //                     </div>
+        //                 </div>
+        //                 <span class="text-sm font-medium text-green-600">Completed</span>
+        //             `;
+                    
+        //             historyContainer.appendChild(transactionEl);
+        //         });
+        //     } else {
+        //         // Fallback to placeholder if data structure is unexpected
+        //         showPlaceholderTransactions();
+        //     }
+        // }
+        
         // Form submission to show wallet section
         document.getElementById('deposit-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -422,6 +699,7 @@
             const amount = document.getElementById('deposit-amount').value;
             const crypto = document.getElementById('crypto-select');
             const cryptoText = crypto.options[crypto.selectedIndex].text;
+            const cryptoValue = crypto.value;
             
             // Update the display with selected values
             document.getElementById('selected-amount').textContent = '$' + amount;
@@ -436,7 +714,7 @@
             let walletAddress = '';
             let qrData = '';
             
-            switch(crypto.value) {
+            switch(cryptoValue) {
                 case 'btc':
                     walletAddress = 'bc1qsnkw4hr8xpqn3lexxhqhqw35wfzslvr6nwm9pn';
                     qrData = 'bitcoin:' + walletAddress;
@@ -448,19 +726,19 @@
                 case 'usdt':
                     walletAddress = 'TZ8B4Qb3g7Wgoc91X7oB4BAWPMr8qXoyeg';
                     qrData = 'ethereum:' + walletAddress;
-
                     break;
                 case 'usdc':
                     walletAddress = '0x3b660BE9049326D71443a9c4374ace3305477C43';
                     qrData = 'ethereum:' + walletAddress;
                     break;
-
-                    case 'bnb':
+                case 'bnb':
                     walletAddress = '0x3b660BE9049326D71443a9c4374ace3305477C43';
                     qrData = 'ethereum:' + walletAddress;
                     break;
                 case 'sol':
-                    walletAddress = 'FKwCLWDKSL3YxDVw6vg2R3BhnTvmTFeytzjVxaawSNNF';
+                   
+
+                                        walletAddress = 'FKwCLWDKSL3YxDVw6vg2R3BhnTvmTFeytzjVxaawSNNF';
                     qrData = 'litecoin:' + walletAddress;
                     break;
             }
@@ -472,7 +750,59 @@
             // Show wallet section and hide amount section
             document.getElementById('amount-section').style.display = 'none';
             document.getElementById('wallet-section').style.display = 'block';
+            
+            // Create deposit record in backend
+            createDepositRecord(amount, cryptoValue);
         });
+        
+        // Create deposit record in backend
+        async function createDepositRecord(amount, currency) {
+            try {
+                if (!accessToken) {
+                    const loggedIn = await handleLogin();
+                    if (!loggedIn) return;
+                }
+                
+                const response = await fetch(DEPOSIT_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        currency: currency.toUpperCase(),
+                        transaction_type: 'deposit'
+                    })
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showToast('Session expired. Please log in again.', 'error');
+                        localStorage.removeItem('access_token');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return;
+                    }
+                    
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showToast('Deposit record created successfully', 'success');
+                console.log('Deposit record:', data);
+                
+                // Refresh transaction history after successful deposit
+                fetchTransactionHistory();
+                
+            } catch (error) {
+                console.error('Error creating deposit record:', error);
+                showToast('Error creating deposit record. Please try again.', 'error');
+            }
+        }
         
         // Back button to return to amount selection
         document.getElementById('back-button').addEventListener('click', function() {
@@ -483,20 +813,13 @@
         // Copy to clipboard function
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(function() {
-                alert('Copied to clipboard: ' + text);
+                showToast('Copied to clipboard: ' + text, 'success');
             }, function(err) {
                 console.error('Could not copy text: ', err);
+                showToast('Failed to copy to clipboard', 'error');
             });
         }
         
-        // Mobile menu toggle (if using the navigation script)
-        document.querySelector('button.md\\:hidden').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu) {
-                mobileMenu.classList.toggle('hidden');
-            }
-        });
-
         // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const closeMenuButton = document.getElementById('close-menu-button');
@@ -552,12 +875,28 @@
                         button.classList.remove('bg-blue-500');
                         button.classList.add('hover:bg-blue-700');
                         
-                        // Show success message (you can replace this with actual functionality)
-                        alert('Transaction submitted! We will notify you once the deposit is confirmed on the blockchain.');
+                        // Show success message
+                        showToast('Transaction submitted! We will notify you once the deposit is confirmed on the blockchain.');
                     }, 500);
                 }
                 loadingBar.style.width = progress + '%';
             }, 300);
+        });
+        
+        // Check authentication on page load and initialize user data
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is authenticated
+            const loggedIn = await handleLogin();
+            if (!loggedIn) return;
+            
+            // Extract user info from JWT token
+            const userInfo = getUserInfoFromToken(accessToken);
+            if (userInfo) {
+                updateUserUI(userInfo);
+            }
+            
+            // Fetch transaction history
+            fetchTransactionHistory();
         });
     </script>
 </body>

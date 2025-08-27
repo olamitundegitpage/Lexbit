@@ -3,47 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lexbit - Wallet Profile</title>
+    <title>Lexbit - Wallet Transactions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .wallet-card {
-            transition: all 0.3s ease;
+        .transaction-row {
+            transition: background-color 0.2s ease;
         }
-        .wallet-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        .transaction-row:hover {
+            background-color: #f9fafb;
         }
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
-        .progress-fill {
-            height: 100%;
-            transition: width 0.5s ease;
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
         }
-
-
-         .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 80%;
-            max-width: 300px;
-            height: 100vh;
-            background-color: white;
-            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .mobile-menu.active {
-            display: block;
-            transform: translateX(0);
-        }
-        .menu-overlay {
+        .login-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -51,21 +38,52 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            z-index: 40;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
         }
-        .menu-overlay.active {
-            display: block;
+        .login-modal.active {
+            display: flex;
+        }
+        .amount-input {
+            max-width: 120px;
         }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Login Required</h2>
+                <button id="close-login-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="user@example.com" value="user@example.com">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter your password" value="string">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Sign In
+                </button>
+            </form>
+            <div id="login-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg hidden"></div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-             <div class="flex items-center space-x-2">
-                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                    <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
-                </div>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="#"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
             <div class="hidden md:flex space-x-8">
                 <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
                 <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
@@ -78,374 +96,155 @@
                     <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
                 <div class="flex items-center cursor-pointer">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
-                </div>
-            </div>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </div>
-    </nav>
-
-     <section>
-            <!-- Mobile Menu Overlay -->
-    <div id="menu-overlay" class="menu-overlay"></div>
-    
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="mobile-menu">
-        <div class="h-full flex flex-col">
-            <!-- Menu Header -->
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-bold">Menu</h2>
-                <button id="close-menu-button" class="text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <!-- Menu Items -->
-            <div class="flex-1 overflow-y-auto p-4">
-                <ul class="space-y-2">
-                    <li>
-                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
-                            <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="investmentplan.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Investment Plan</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Transactions</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Referral</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Menu Footer -->
-            <div class="p-4 border-t border-gray-200">
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-blue-600 relative">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                    <div class="flex items-center cursor-pointer">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                    <div id="profile-initials" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                        <div class="spinner"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    </section>
+    </nav>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
-        <!-- User Profile Header -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
-            <div class="flex items-center mb-4 md:mb-0">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold mr-4">JD</div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">James Jane</h1>
-                    <p class="text-gray-600">Premium Member since June 2023</p>
-                </div>
-            </div>
-            <div class="flex space-x-3">
-                <button class="px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50">
-                    <i class="fas fa-cog mr-2"></i> Settings
-                </button>
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                    <i class="fas fa-plus mr-2"></i> Add Funds
-                </button>
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Wallet Transactions</h1>
+                <p class="text-gray-600">View all your deposits, withdrawals, and transactions</p>
             </div>
         </div>
 
         <!-- Wallet Summary Cards -->
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <!-- Total Balance -->
-            <div class="wallet-card bg-white rounded-xl shadow-md p-6">
-                <div class="flex justify-between items-start mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-gray-500">Total Balance</p>
-                        <h2 class="text-2xl font-bold text-gray-800">$9,750.25</h2>
+                        <p class="text-sm text-gray-500">Total Balance</p>
+                        <h4 id="total-balance" class="text-2xl font-bold">$0.00</h4>
                     </div>
-                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600">
                         <i class="fas fa-wallet"></i>
                     </div>
                 </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Available</span>
-                    <span class="font-medium">$7,200.00</span>
-                </div>
-                <div class="flex justify-between text-sm mt-1">
-                    <span class="text-gray-500">Invested</span>
-                    <span class="font-medium">$2,550.25</span>
-                </div>
             </div>
-
-            <!-- Withdrawal Card -->
-            <div class="wallet-card bg-white rounded-xl shadow-md p-6">
-                <div class="flex justify-between items-start mb-4">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-gray-500">Total Withdrawn</p>
-                        <h2 class="text-2xl font-bold text-gray-800">$3,420.50</h2>
+                        <p class="text-sm text-gray-500">Total Deposits</p>
+                        <h4 id="total-deposits" class="text-2xl font-bold">$0.00</h4>
                     </div>
-                    <div class="bg-green-100 text-green-600 p-2 rounded-lg">
-                        <i class="fas fa-arrow-up"></i>
-                    </div>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">This Month</span>
-                    <span class="font-medium">$850.00</span>
-                </div>
-                <div class="flex justify-between text-sm mt-1">
-                    <span class="text-gray-500">Withdrawal Limit</span>
-                    <span class="font-medium">$5,000 / $10,000</span>
-                </div>
-                <div class="progress-bar bg-gray-200 mt-2">
-                    <div class="progress-fill bg-green-500" style="width: 50%"></div>
-                </div>
-            </div>
-
-            <!-- Deposit Card -->
-            <div class="wallet-card bg-white rounded-xl shadow-md p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-gray-500">Total Deposited</p>
-                        <h2 class="text-2xl font-bold text-gray-800">$15,200.75</h2>
-                    </div>
-                    <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                    <div class="bg-green-100 p-3 rounded-full text-green-600">
                         <i class="fas fa-arrow-down"></i>
                     </div>
                 </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">This Month</span>
-                    <span class="font-medium">$2,500.00</span>
-                </div>
-                <div class="flex justify-between text-sm mt-1">
-                    <span class="text-gray-500">Last Deposit</span>
-                    <span class="font-medium">Jun 15, 2023</span>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Withdrawals</p>
+                        <h4 id="total-withdrawals" class="text-2xl font-bold">$0.00</h4>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-full text-red-600">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Withdrawal History Section -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-800">Withdrawal History</h2>
-                <div class="flex items-center space-x-2">
-                    <select class="border border-gray-300 rounded-md px-3 py-1 text-sm">
-                        <option>All Time</option>
-                        <option>This Year</option>
-                        <option selected>This Month</option>
-                        <option>Last Month</option>
-                    </select>
-                    <button class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-download"></i>
-                    </button>
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                        <select id="type-filter" class="w-full md:w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All Types</option>
+                            <option value="deposit">Deposit</option>
+                            <option value="withdrawal">Withdrawal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="status-filter" class="w-full md:w-40 px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">All Statuses</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                        <div class="flex space-x-2">
+                            <input type="date" id="from-date" class="w-full md:w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <span class="self-center text-gray-500">to</span>
+                            <input type="date" id="to-date" class="w-full md:w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount Range</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="min-amount" placeholder="Min" class="amount-input px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <span class="self-center text-gray-500">to</span>
+                            <input type="number" id="max-amount" placeholder="Max" class="amount-input px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="apply-filters" class="h-10 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Filter
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Transaction Table -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- Withdrawal 1 -->
+                    <tbody id="transactions-body" class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-18</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <img src="https://logos-world.net/wp-content/uploads/2020/07/PayPal-Logo.png" alt="PayPal" class="h-5 mr-2">
-                                    PayPal
+                            <td colspan="5" class="px-6 py-4 text-center">
+                                <div class="flex justify-center">
+                                    <div class="spinner"></div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$500.00</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 underline">
-                                <a href="#" class="font-mono">WD-78945612</a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-800 mr-3">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="text-gray-600 hover:text-gray-800">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Withdrawal 2 -->
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-10</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Bitcoin_Logo.svg/1024px-Bitcoin_Logo.svg.png" alt="Bitcoin" class="h-5 mr-2">
-                                    Bitcoin
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">0.025 BTC ($750.00)</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 underline">
-                                <a href="#" class="font-mono">WD-12345678</a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-800 mr-3">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="text-gray-600 hover:text-gray-800">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Withdrawal 3 -->
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-05</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <img src="https://logos-world.net/wp-content/uploads/2020/07/PayPal-Logo.png" alt="PayPal" class="h-5 mr-2">
-                                    PayPal
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$350.00</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 underline">
-                                <a href="#" class="font-mono">WD-34567890</a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-800 mr-3">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="text-gray-600 hover:text-gray-800">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Withdrawal 4 -->
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-01</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Bank_Transfer_icon.svg/1024px-Bank_Transfer_icon.svg.png" alt="Bank Transfer" class="h-5 mr-2">
-                                    Bank Transfer
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$1,200.00</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Processing</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 underline">
-                                <a href="#" class="font-mono">WD-90123456</a>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-blue-600 hover:text-blue-800 mr-3">
-                                    <i class="fas fa-receipt"></i>
-                                </button>
-                                <button class="text-gray-600 hover:text-gray-800">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div class="text-sm text-gray-500">
-                    Showing <span class="font-medium">1</span> to <span class="font-medium">4</span> of <span class="font-medium">12</span> withdrawals
-                </div>
-                <div class="flex space-x-2">
-                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">
-                        Previous
-                    </button>
-                    <button class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">
-                        Next
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Recent Activity</h2>
-            </div>
-            <div class="divide-y divide-gray-200">
-                <!-- Activity 1 -->
-                <div class="p-6">
-                    <div class="flex items-start">
-                        <div class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-4">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <h3 class="text-sm font-medium text-gray-800">Withdrawal to PayPal</h3>
-                                <span class="text-sm text-gray-500">2 hours ago</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mt-1">Withdrawal of $500.00 to your PayPal account</p>
-                            <div class="mt-2 text-sm">
-                                <span class="text-gray-500">Status:</span>
-                                <span class="ml-2 text-green-600 font-medium">Completed</span>
-                            </div>
-                        </div>
+            
+            <!-- Pagination -->
+            <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p id="pagination-info" class="text-sm text-gray-700">
+                            Loading transactions...
+                        </p>
                     </div>
-                </div>
-                <!-- Activity 2 -->
-                <div class="p-6">
-                    <div class="flex items-start">
-                        <div class="bg-green-100 text-green-600 p-2 rounded-lg mr-4">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <h3 class="text-sm font-medium text-gray-800">Investment Return</h3>
-                                <span class="text-sm text-gray-500">1 day ago</span>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <button id="prev-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div id="page-numbers" class="flex">
+                                <!-- Page numbers will be inserted here -->
                             </div>
-                            <p class="text-sm text-gray-600 mt-1">Received $120.50 from Growth Plan investment</p>
-                            <div class="mt-2 text-sm">
-                                <span class="text-gray-500">Plan:</span>
-                                <span class="ml-2 font-medium">Growth Plan</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Activity 3 -->
-                <div class="p-6">
-                    <div class="flex items-start">
-                        <div class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-4">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <h3 class="text-sm font-medium text-gray-800">Withdrawal to Bank</h3>
-                                <span class="text-sm text-gray-500">3 days ago</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mt-1">Withdrawal of $1,200.00 to your bank account</p>
-                            <div class="mt-2 text-sm">
-                                <span class="text-gray-500">Status:</span>
-                                <span class="ml-2 text-yellow-600 font-medium">Processing</span>
-                            </div>
-                        </div>
+                            <button id="next-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -456,62 +255,383 @@
     <footer class="bg-gray-900 text-gray-300 py-8 mt-12">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 md:mb-0 gap-2">
+                <div class="flex items-center mb-4 md:mb-0">
                     <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                    <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                    <a href="#"><h1 class="text-2xl font-bold">LexBit</h1></a>
                 </div>
-                <!-- <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                </div> -->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-                © 2023 Lexbit. All rights reserved.
+                © 2025 Lexbit. All rights reserved.
             </div>
         </div>
     </footer>
 
     <script>
-        // Mobile menu toggle (if using the navigation script)
-        document.querySelector('button.md\\:hidden').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu) {
-                mobileMenu.classList.toggle('hidden');
+        // Configuration
+        const BASE_URL = 'https://lexbit.onrender.com';
+        let AUTH_TOKEN = localStorage.getItem('auth_token');
+        
+        // State management
+        let currentPage = 1;
+        let totalPages = 1;
+        let totalTransactions = 0;
+        let transactions = [];
+        let filters = {
+            type: 'all',
+            status: 'all',
+            fromDate: '',
+            toDate: '',
+            minAmount: '',
+            maxAmount: ''
+        };
+        
+        // DOM Elements
+        const loginModal = document.getElementById('login-modal');
+        const closeLoginModalBtn = document.getElementById('close-login-modal');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const transactionsBody = document.getElementById('transactions-body');
+        const typeFilter = document.getElementById('type-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
+        const minAmountInput = document.getElementById('min-amount');
+        const maxAmountInput = document.getElementById('max-amount');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const pageNumbersContainer = document.getElementById('page-numbers');
+        const paginationInfo = document.getElementById('pagination-info');
+        const totalBalanceEl = document.getElementById('total-balance');
+        const totalDepositsEl = document.getElementById('total-deposits');
+        const totalWithdrawalsEl = document.getElementById('total-withdrawals');
+        
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date values
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            fromDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+            toDateInput.value = today.toISOString().split('T')[0];
+            
+            // Set initial profile initials
+            const userEmail = localStorage.getItem('user_email') || 'user@example.com';
+            const initials = userEmail.charAt(0).toUpperCase();
+            document.getElementById('profile-initials').textContent = initials;
+            
+            // Check if we have a valid auth token
+            if (!AUTH_TOKEN) {
+                showLoginModal();
+            } else {
+                // Verify if token is still valid
+                verifyToken();
             }
+            
+            // Set up event listeners
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadTransactions();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadTransactions();
+                }
+            });
+            
+            // Login form handling
+            loginForm.addEventListener('submit', handleLogin);
+            closeLoginModalBtn.addEventListener('click', () => {
+                loginModal.classList.remove('active');
+            });
         });
         
-        // Sample function to handle withdrawal actions
-        function handleWithdrawalAction(action, withdrawalId) {
-            console.log(`${action} withdrawal ${withdrawalId}`);
-            // In a real app, this would make an API call
-        }
-
-          // Mobile menu functionality
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const closeMenuButton = document.getElementById('close-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuOverlay = document.getElementById('menu-overlay');
-        
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            mobileMenu.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        // Function to show login modal
+        function showLoginModal() {
+            loginModal.classList.add('active');
         }
         
-        // Open mobile menu
-        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        // Function to handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Login failed with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status_code === 200) {
+                    // Save tokens and user info
+                    localStorage.setItem('auth_token', data.data.access_token);
+                    localStorage.setItem('refresh_token', data.data.refresh_token);
+                    localStorage.setItem('user_email', email);
+                    
+                    AUTH_TOKEN = data.data.access_token;
+                    
+                    // Update profile initials
+                    const initials = email.charAt(0).toUpperCase();
+                    document.getElementById('profile-initials').textContent = initials;
+                    
+                    // Hide login modal
+                    loginModal.classList.remove('active');
+                    loginError.classList.add('hidden');
+                    
+                    // Load transactions
+                    loadTransactions();
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = error.message || 'Login failed. Please try again.';
+                loginError.classList.remove('hidden');
+            }
+        }
         
-        // Close mobile menu
-        closeMenuButton.addEventListener('click', toggleMobileMenu);
-        menuOverlay.addEventListener('click', toggleMobileMenu);
+        // Function to verify token validity
+        async function verifyToken() {
+            try {
+                const response = await fetch(`${BASE_URL}/current_user`, {
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token is invalid, show login modal
+                        showLoginModal();
+                    } else {
+                        throw new Error(`Token verification failed with status: ${response.status}`);
+                    }
+                } else {
+                    // Token is valid, load transactions
+                    loadTransactions();
+                }
+            } catch (error) {
+                console.error('Token verification error:', error);
+                showLoginModal();
+            }
+        }
         
-        // Close menu when clicking on a menu item
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', toggleMobileMenu);
-        });
+        // Function to load transactions
+        async function loadTransactions() {
+            try {
+                // Show loading state
+                transactionsBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center">
+                            <div class="flex justify-center">
+                                <div class="spinner"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                
+                // Build query parameters
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 10,
+                    sort_by: 'created_at',
+                    sort_order: 'desc'
+                });
+                
+                if (filters.type !== 'all') params.append('transaction_type', filters.type);
+                if (filters.status !== 'all') params.append('status', filters.status);
+                if (filters.fromDate) params.append('from_date', filters.fromDate);
+                if (filters.toDate) params.append('to_date', filters.toDate);
+                if (filters.minAmount) params.append('min_amount', filters.minAmount);
+                if (filters.maxAmount) params.append('max_amount', filters.maxAmount);
+                
+                console.log('Loading transactions with params:', params.toString());
+                
+                const response = await fetch(`${BASE_URL}/history?${params.toString()}`, {
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token is invalid, show login modal
+                        showLoginModal();
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('API response:', data);
+                
+                // Check if we got the actual transaction data
+                if (data.message === "Not authenticated") {
+                    showLoginModal();
+                    return;
+                }
+                
+                // Use the actual API response data
+                // This assumes the API returns an array of transactions
+                transactions = data.transactions || data.data || [];
+                totalTransactions = data.total_count || data.total || transactions.length;
+                totalPages = Math.ceil(totalTransactions / 10);
+                
+                // Update summary cards
+                updateSummaryCards();
+                
+                // Update pagination
+                updatePagination();
+                
+                // Render transactions
+                renderTransactions();
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                transactionsBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-600">
+                            Error loading transactions. Please try again.
+                            <br><small>${error.message}</small>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Function to update summary cards with actual data
+        function updateSummaryCards() {
+            // Calculate totals based on actual transaction data
+            const deposits = transactions.filter(t => t.transaction_type === 'deposit');
+            const withdrawals = transactions.filter(t => t.transaction_type === 'withdrawal');
+            
+            const totalDeposits = deposits.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            const totalWithdrawals = withdrawals.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            const totalBalance = totalDeposits - totalWithdrawals;
+            
+            totalBalanceEl.textContent = `$${totalBalance.toFixed(2)}`;
+            totalDepositsEl.textContent = `$${totalDeposits.toFixed(2)}`;
+            totalWithdrawalsEl.textContent = `$${totalWithdrawals.toFixed(2)}`;
+        }
+        
+        // Function to render transactions with actual data
+        function renderTransactions() {
+            const startIdx = (currentPage - 1) * 10;
+            const endIdx = Math.min(startIdx + 10, transactions.length);
+            const pageTransactions = transactions.slice(startIdx, endIdx);
+            
+            if (pageTransactions.length === 0) {
+                transactionsBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No transactions found matching your filters.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            pageTransactions.forEach(transaction => {
+                const transactionDate = new Date(transaction.created_at || transaction.date);
+                let statusClass = '';
+                if (transaction.status === 'approved') statusClass = 'bg-green-100 text-green-800';
+                else if (transaction.status === 'pending') statusClass = 'bg-yellow-100 text-yellow-800';
+                else statusClass = 'bg-red-100 text-red-800';
+                
+                html += `
+                    <tr class="transaction-row">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            ${transaction.id || transaction.transaction_id || 'N/A'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${transactionDate.toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${(transaction.transaction_type || '').charAt(0).toUpperCase() + (transaction.transaction_type || '').slice(1)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            $${parseFloat(transaction.amount || 0).toFixed(2)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="status-badge ${statusClass}">
+                                ${(transaction.status || '').charAt(0).toUpperCase() + (transaction.status || '').slice(1)}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            transactionsBody.innerHTML = html;
+        }
+        
+        // Function to update pagination
+        function updatePagination() {
+            // Update pagination info
+            const startItem = (currentPage - 1) * 10 + 1;
+            const endItem = Math.min(currentPage * 10, totalTransactions);
+            paginationInfo.textContent = `Showing ${startItem} to ${endItem} of ${totalTransactions} transactions`;
+            
+            // Update pagination buttons
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+            
+            // Update page numbers
+            pageNumbersContainer.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium 
+                    ${i === currentPage ? 'z-10 bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    loadTransactions();
+                });
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+        }
+        
+        // Function to apply filters
+        function applyFilters() {
+            console.log('Applying filters');
+            filters = {
+                type: typeFilter.value,
+                status: statusFilter.value,
+                fromDate: fromDateInput.value,
+                toDate: toDateInput.value,
+                minAmount: minAmountInput.value,
+                maxAmount: maxAmountInput.value
+            };
+            
+            console.log('Filters:', filters);
+            
+            currentPage = 1;
+            loadTransactions();
+        }
     </script>
 </body>
 </html>

@@ -289,6 +289,99 @@
                     </button>
                 </div>
             </div>
+            
+            <!-- Plan 4 - Premium Plan -->
+            <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
+                <div class="bg-purple-50 p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Premium Plan</h3>
+                    <p class="text-gray-600">Enhanced returns for serious investors</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">15%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $5,000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">36 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Portfolio diversification</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Personal financial advisor</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Daily trading signals</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">VIP customer support</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors choose-plan-btn" data-plan="premium">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Plan 5 - VIP Plan -->
+            <div class="plan-card bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 border-2 border-yellow-500">
+                <div class="bg-yellow-50 p-6 relative">
+                    <div class="absolute top-4 right-4 bg-yellow-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        EXCLUSIVE
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">VIP Plan</h3>
+                    <p class="text-gray-600">Ultimate investment experience</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-end mb-6">
+                        <span class="text-4xl font-bold text-gray-800">20%</span>
+                        <span class="text-gray-500 ml-1">monthly return</span>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Minimum deposit: $10,000</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">48 month duration</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Custom investment strategy</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Dedicated investment team</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Real-time portfolio tracking</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Private consultations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span class="text-gray-700">Exclusive investment opportunities</span>
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium transition-colors choose-plan-btn" data-plan="vip">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -401,70 +494,151 @@
     </footer>
 
     <script>
-        // Mobile menu functionality
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const closeMenuButton = document.getElementById('close-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuOverlay = document.getElementById('menu-overlay');
+      
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeMenuButton = document.getElementById('close-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuOverlay = document.getElementById('menu-overlay');
+    
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+        mobileMenu.classList.toggle('active');
+        menuOverlay.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    }
+    
+    // Open mobile menu
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    
+    // Close mobile menu
+    closeMenuButton.addEventListener('click', toggleMobileMenu);
+    menuOverlay.addEventListener('click', toggleMobileMenu);
+    
+    // Close menu when clicking on a menu item
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', toggleMobileMenu);
+    });
+    
+    // Get modal elements
+    const modal = document.getElementById('deposit-modal');
+    const cancelBtn = document.getElementById('cancel-modal');
+    const depositBtn = document.getElementById('go-to-deposit');
+    const planButtons = document.querySelectorAll('.choose-plan-btn');
+    
+    // Function to check user balance (in a real app, this would be an API call)
+    function checkUserBalance() {
+        // In a real application, you would:
+        // 1. Get the user's ID from session/local storage
+        // 2. Make an API call to check their balance
+        // 3. Return the balance or false if insufficient
         
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            mobileMenu.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-        }
-        
-        // Open mobile menu
-        mobileMenuButton.addEventListener('click', toggleMobileMenu);
-        
-        // Close mobile menu
-        closeMenuButton.addEventListener('click', toggleMobileMenu);
-        menuOverlay.addEventListener('click', toggleMobileMenu);
-        
-        // Close menu when clicking on a menu item
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', toggleMobileMenu);
-        });
-        
-        // Check if user has balance (in a real app, this would check actual balance)
-        const userHasBalance = false; // Set to false to test the modal
-        
-        // Get modal elements
-        const modal = document.getElementById('deposit-modal');
-        const cancelBtn = document.getElementById('cancel-modal');
-        const depositBtn = document.getElementById('go-to-deposit');
-        const planButtons = document.querySelectorAll('.choose-plan-btn');
-        
-        // Add click event to all plan buttons
-        planButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const plan = this.getAttribute('data-plan');
-                
-                if (userHasBalance) {
-                    // In a real app, this would initiate the investment process
-                    console.log(`Initiating ${plan} plan investment`);
-                    // window.location.href = `invest-confirm.html?plan=${plan}`;
-                } else {
-                    // Show deposit required modal
-                    modal.style.display = 'flex';
-                    // Close mobile menu if open
-                    mobileMenu.classList.remove('active');
-                    menuOverlay.classList.remove('active');
-                }
-            });
-        });
-        
-        // Close modal when cancel button is clicked
-        cancelBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-        
-        // Close modal when clicking outside the modal content
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
+        // For demo purposes, we'll check localStorage
+        const storedBalance = localStorage.getItem('userBalance');
+        return storedBalance ? parseFloat(storedBalance) : 0;
+    }
+    
+    // Function to get minimum deposit for a plan
+    function getPlanMinimum(plan) {
+        const planMinimums = {
+            'starter': 100,
+            'growth': 500,
+            'pro': 2000,
+            'premium': 5000,
+            'vip': 10000
+        };
+        return planMinimums[plan] || 0;
+    }
+    
+    // Add click event to all plan buttons
+    planButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const plan = this.getAttribute('data-plan');
+            const userBalance = checkUserBalance();
+            const planMinimum = getPlanMinimum(plan);
+            
+            // Check if user has sufficient balance for the selected plan
+            if (userBalance >= planMinimum) {
+                // Show confirmation page with plan details
+                showConfirmationPage(plan, planMinimum);
+            } else {
+                // Show deposit required modal
+                showDepositModal(planMinimum);
             }
         });
+    });
+    
+    // Function to show confirmation page
+    function showConfirmationPage(plan, planMinimum) {
+        // In a real app, you would redirect to a confirmation page
+        // For this demo, we'll show an alert and log to console
+        
+        const planNames = {
+            'starter': 'Starter Plan',
+            'growth': 'Growth Plan',
+            'pro': 'Pro Plan',
+            'premium': 'Premium Plan',
+            'vip': 'VIP Plan'
+        };
+        
+        console.log(`Initiating ${plan} plan investment with minimum $${planMinimum}`);
+        alert(`Confirming your investment in the ${planNames[plan]} (Minimum: $${planMinimum})\n\nYour available balance is sufficient for this investment.`);
+        
+        // In a real app, you would redirect to confirmation page:
+        // window.location.href = `invest-confirm.html?plan=${plan}`;
+    }
+    
+    // Function to show deposit modal
+    function showDepositModal(requiredAmount) {
+        // Update modal message to show required amount
+        const message = document.querySelector('#deposit-modal .text-sm.text-gray-500');
+        message.textContent = `You need to deposit at least $${requiredAmount} to invest in this plan.`;
+        
+        // Show the modal
+        modal.style.display = 'flex';
+        
+        // Close mobile menu if open
+        mobileMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+    }
+    
+    // Close modal when cancel button is clicked
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the modal content
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Demo function to set a balance (for testing)
+    // In a real app, this would come from your backend/user session
+    function setDemoBalance(amount) {
+        localStorage.setItem('userBalance', amount.toString());
+        console.log(`Demo balance set to $${amount}`);
+    }
+    
+    // Uncomment one of these to test different scenarios:
+    // setDemoBalance(0);      // No balance (will show deposit modal)
+    // setDemoBalance(100);    // Enough for Starter plan
+    // setDemoBalance(5000);   // Enough for Premium plan
+    // setDemoBalance(15000);  // Enough for all plans
+
+
+
+
+
+
+
+        
+
+
+
+
+
     </script>
 </body>
 </html>

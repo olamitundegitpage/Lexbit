@@ -78,9 +78,51 @@
             background-color: #F8FAFC;
             border-left: 3px solid #3B82F6;
         }
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-form">
+            <h2 class="text-2xl font-bold mb-6 text-center">LexBit Admin Login</h2>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                        Sign In
+                    </button>
+                </div>
+                <div id="login-error" class="text-red-500 text-sm mt-4 hidden">Login failed. Please check your credentials.</div>
+            </form>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar fixed inset-y-0 left-0 bg-white shadow-md w-64 z-20">
         <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
@@ -160,7 +202,7 @@
                             <i class="fas fa-bell"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">3</span>
+                        <span id="unread-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -176,7 +218,7 @@
     </div>
 
     <!-- Main Content -->
-    <div id="main-content" class="content-expanded flex flex-col flex-1">
+    <div id="main-content" class="content-expanded flex flex-col flex-1" style="display: none;">
         <!-- Top Navigation -->
         <header class="bg-white shadow-sm z-10">
             <div class="flex items-center justify-between h-16 px-6">
@@ -188,7 +230,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400"></i>
                         </div>
-                        <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search notifications...">
+                        <input type="text" id="search-input" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Search notifications...">
                     </div>
                 </div>
                 
@@ -206,13 +248,13 @@
                         <div>
                             <button class="flex text-sm rounded-full focus:outline-none">
                                 <span class="sr-only">Open user menu</span>
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold" id="user-initial">A</div>
                             </button>
                         </div>
                         <div class="dropdown-content mt-2 w-48 bg-white rounded-md shadow-lg py-1">
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                            <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                         </div>
                     </div>
                 </div>
@@ -242,14 +284,14 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Notifications</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">1,248</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900" id="total-notifications">0</p>
                         </div>
                         <div class="bg-blue-100 p-3 rounded-full">
                             <i class="fas fa-bell text-blue-600 text-xl"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-green-600 text-sm font-semibold">+18.5%</span>
+                        <span class="text-green-600 text-sm font-semibold" id="total-trend">+0%</span>
                         <span class="text-gray-500 text-sm ml-2">from last week</span>
                     </div>
                 </div>
@@ -257,14 +299,14 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Unread Notifications</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">24</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900" id="unread-notifications">0</p>
                         </div>
                         <div class="bg-red-100 p-3 rounded-full">
                             <i class="fas fa-envelope text-red-600 text-xl"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-red-600 text-sm font-semibold">+3.2%</span>
+                        <span class="text-red-600 text-sm font-semibold" id="unread-trend">+0%</span>
                         <span class="text-gray-500 text-sm ml-2">from last week</span>
                     </div>
                 </div>
@@ -272,14 +314,14 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">System Alerts</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">18</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900" id="system-notifications">0</p>
                         </div>
                         <div class="bg-yellow-100 p-3 rounded-full">
                             <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-green-600 text-sm font-semibold">+5.7%</span>
+                        <span class="text-green-600 text-sm font-semibold" id="system-trend">+0%</span>
                         <span class="text-gray-500 text-sm ml-2">from last week</span>
                     </div>
                 </div>
@@ -287,14 +329,14 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">User Notifications</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">1,206</p>
+                            <p class="mt-1 text-3xl font-semibold text-gray-900" id="user-notifications">0</p>
                         </div>
                         <div class="bg-green-100 p-3 rounded-full">
                             <i class="fas fa-user-circle text-green-600 text-xl"></i>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-green-600 text-sm font-semibold">+12.1%</span>
+                        <span class="text-green-600 text-sm font-semibold" id="user-trend">+0%</span>
                         <span class="text-gray-500 text-sm ml-2">from last week</span>
                     </div>
                 </div>
@@ -341,10 +383,10 @@
                         </div>
                     </div>
                     <div class="flex space-x-3">
-                        <button class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button id="apply-filters" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-filter mr-2"></i>Apply Filters
                         </button>
-                        <button class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button id="reset-filters" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-sync-alt mr-2"></i>Reset
                         </button>
                     </div>
@@ -359,7 +401,7 @@
                         <label for="select-all" class="ml-2 block text-sm text-gray-700">Select all</label>
                     </div>
                     <div class="flex space-x-3">
-                        <button class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button id="mark-all-read" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-envelope-open-text mr-2"></i>Mark as Read
                         </button>
                         <button class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -377,206 +419,20 @@
                 <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                     <h2 class="text-lg font-medium text-gray-900">Recent Notifications</h2>
                     <div class="flex items-center">
-                        <span class="text-sm text-gray-500 mr-3">Showing 1 to 8 of 24 notifications</span>
-                        <button class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <span class="text-sm text-gray-500 mr-3" id="showing-text">Loading notifications...</span>
+                        <button id="prev-page" class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none ml-1">
+                        <button id="next-page" class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none ml-1">
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
                 </div>
-                <div class="divide-y divide-gray-200">
-                    <!-- Notification Item - Unread -->
-                    <div class="notification-item unread p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-exclamation-circle text-blue-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">System Maintenance Scheduled</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-system">System</span>
-                                        <span class="status-badge status-unread">Unread</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">Scheduled maintenance will occur on June 25 from 2:00 AM to 4:00 AM UTC. The platform will be temporarily unavailable during this period.</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 22, 2023 at 10:15 AM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Item - Unread -->
-                    <div class="notification-item unread p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-hand-holding-usd text-green-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">New Investment Made</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-transaction">Transaction</span>
-                                        <span class="status-badge status-unread">Unread</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">User John Smith (ID: #USR-1001) has invested $10,000 in the Premium Plan. Expected daily profit: $250.</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 22, 2023 at 9:30 AM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Item - Unread -->
-                    <div class="notification-item unread p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-shield-alt text-red-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">Suspicious Login Attempt</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-security">Security</span>
-                                        <span class="status-badge status-unread">Unread</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">Multiple failed login attempts detected for user Sarah Johnson (ID: #USR-1002) from IP: 192.168.1.45. Account temporarily locked.</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 21, 2023 at 11:45 PM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Item - Read -->
-                    <div class="notification-item p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-gift text-yellow-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">New Referral Bonus Awarded</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-promotion">Promotion</span>
-                                        <span class="status-badge status-read">Read</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">User Michael Brown (ID: #USR-1003) has earned a $50 referral bonus for bringing in a new investor (ID: #USR-1015).</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 21, 2023 at 4:20 PM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Item - Read -->
-                    <div class="notification-item p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-exchange-alt text-blue-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">Withdrawal Request Processed</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-transaction">Transaction</span>
-                                        <span class="status-badge status-read">Read</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">Withdrawal of $2,500 for user Emily Davis (ID: #USR-1004) has been processed. Transaction ID: #TXN-1003.</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 21, 2023 at 2:15 PM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Item - Read -->
-                    <div class="notification-item p-6 hover:bg-gray-50 cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 pt-0.5">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user-plus text-purple-600"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4 flex-1 min-w-0">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-medium text-gray-900">New User Registration</p>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="type-badge type-system">System</span>
-                                        <span class="status-badge status-read">Read</span>
-                                    </div>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-500">New user registered: Robert Taylor (ID: #USR-1013) with email: robert.t@example.com. Referred by Michael Brown (ID: #USR-1003).</p>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">June 20, 2023 at 6:45 PM</span>
-                                    <div class="flex space-x-3">
-                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                            View Details
-                                        </button>
-                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                            Dismiss
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div id="notifications-container" class="divide-y divide-gray-200">
+                    <!-- Notifications will be loaded here -->
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                        <p>Loading notifications...</p>
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
@@ -590,32 +446,13 @@
                     </div>
                     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">24</span> results
+                            <p class="text-sm text-gray-700" id="pagination-info">
+                                Loading...
                             </p>
                         </div>
                         <div>
-                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Previous</span>
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                                <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                    1
-                                </a>
-                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                    2
-                                </a>
-                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                    3
-                                </a>
-                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                                    ...
-                                </span>
-                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Next</span>
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination" id="pagination-nav">
+                                <!-- Pagination will be generated here -->
                             </nav>
                         </div>
                     </div>
@@ -691,66 +528,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Referral Bonus Template -->
-                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-md font-medium text-gray-900">Referral Bonus</h3>
-                                <span class="type-badge type-promotion">Promotion</span>
-                            </div>
-                            <p class="mt-2 text-sm text-gray-500">Notify users when they earn a referral bonus.</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="text-xs text-gray-500">Last used: Jun 21</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                        Edit
-                                    </button>
-                                    <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                        Preview
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Withdrawal Processed Template -->
-                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-md font-medium text-gray-900">Withdrawal Processed</h3>
-                                <span class="type-badge type-transaction">Transaction</span>
-                            </div>
-                            <p class="mt-2 text-sm text-gray-500">Notify users when their withdrawal request is processed.</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="text-xs text-gray-500">Last used: Jun 21</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                        Edit
-                                    </button>
-                                    <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                        Preview
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- New User Welcome Template -->
-                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-md font-medium text-gray-900">New User Welcome</h3>
-                                <span class="type-badge type-system">System</span>
-                            </div>
-                            <p class="mt-2 text-sm text-gray-500">Welcome new users to the platform with onboarding information.</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="text-xs text-gray-500">Last used: Jun 20</span>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                                        Edit
-                                    </button>
-                                    <button class="text-gray-500 hover:text-gray-700 text-sm font-medium">
-                                        Preview
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -758,9 +535,488 @@
     </div>
 
     <script>
+        // API Configuration
+        const API_BASE_URL = 'https://lexbit.onrender.com';
+        let accessToken = localStorage.getItem('accessToken');
+        let refreshToken = localStorage.getItem('refreshToken');
+        let currentPage = 1;
+        const limit = 8;
+        let totalNotifications = 0;
+        let notificationsData = [];
+
+        // DOM Elements
+        const loginOverlay = document.getElementById('login-overlay');
+        const mainContent = document.getElementById('main-content');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const notificationsContainer = document.getElementById('notifications-container');
+        const paginationInfo = document.getElementById('pagination-info');
+        const paginationNav = document.getElementById('pagination-nav');
+        const showingText = document.getElementById('showing-text');
+        const logoutBtn = document.getElementById('logout-btn');
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        const searchInput = document.getElementById('search-input');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+
+        // Check authentication status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (accessToken) {
+                // Verify if token is still valid
+                verifyToken().then(isValid => {
+                    if (isValid) {
+                        hideLogin();
+                        loadNotifications();
+                    } else {
+                        showLogin();
+                    }
+                }).catch(() => {
+                    showLogin();
+                });
+            } else {
+                showLogin();
+            }
+        });
+
+        // Login form submission
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    accessToken = data.data.access_token;
+                    refreshToken = data.data.refresh_token;
+                    
+                    // Store tokens
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    
+                    // Set user initial
+                    document.getElementById('user-initial').textContent = email.charAt(0).toUpperCase();
+                    
+                    // Hide login and show main content
+                    hideLogin();
+                    loadNotifications();
+                } else {
+                    showLoginError();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showLoginError();
+            }
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            accessToken = null;
+            refreshToken = null;
+            showLogin();
+        });
+
+        // Mark all as read
+        markAllReadBtn.addEventListener('click', function() {
+            markAllAsRead();
+        });
+
+        // Apply filters
+        applyFiltersBtn.addEventListener('click', function() {
+            currentPage = 1;
+            loadNotifications();
+        });
+
+        // Reset filters
+        resetFiltersBtn.addEventListener('click', function() {
+            document.getElementById('type-filter').value = 'all';
+            document.getElementById('status-filter').value = 'all';
+            document.getElementById('user-filter').value = 'all';
+            document.getElementById('date-range').value = 'all';
+            searchInput.value = '';
+            currentPage = 1;
+            loadNotifications();
+        });
+
+        // Search functionality
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                currentPage = 1;
+                loadNotifications();
+            }
+        });
+
+        // Pagination
+        prevPageBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadNotifications();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(totalNotifications / limit);
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadNotifications();
+            }
+        });
+
+        // Helper functions
+        function showLogin() {
+            loginOverlay.style.display = 'flex';
+            mainContent.style.display = 'none';
+        }
+
+        function hideLogin() {
+            loginOverlay.style.display = 'none';
+            mainContent.style.display = 'flex';
+        }
+
+        function showLoginError() {
+            loginError.classList.remove('hidden');
+            setTimeout(() => {
+                loginError.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function verifyToken() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications?page=1&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Token verification error:', error);
+                return false;
+            }
+        }
+
+        async function refreshAccessToken() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/refresh`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${refreshToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    accessToken = data.access_token;
+                    localStorage.setItem('accessToken', accessToken);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Token refresh error:', error);
+                return false;
+            }
+        }
+
+        async function apiCall(url, options = {}) {
+            options.headers = options.headers || {};
+            options.headers['Authorization'] = `Bearer ${accessToken}`;
+            options.headers['accept'] = 'application/json';
+            
+            let response = await fetch(url, options);
+            
+            // If token is invalid, try to refresh it
+            if (response.status === 401) {
+                const refreshed = await refreshAccessToken();
+                if (refreshed) {
+                    options.headers['Authorization'] = `Bearer ${accessToken}`;
+                    response = await fetch(url, options);
+                } else {
+                    // If refresh fails, redirect to login
+                    showLogin();
+                    throw new Error('Authentication failed');
+                }
+            }
+            
+            return response;
+        }
+
+        async function loadNotifications() {
+            try {
+                notificationsContainer.innerHTML = `
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                        <p>Loading notifications...</p>
+                    </div>
+                `;
+                
+                // Build query parameters
+                const typeFilter = document.getElementById('type-filter').value;
+                const statusFilter = document.getElementById('status-filter').value;
+                const userFilter = document.getElementById('user-filter').value;
+                const dateRange = document.getElementById('date-range').value;
+                const searchQuery = searchInput.value;
+                
+                let url = `${API_BASE_URL}/admin/notifications?page=${currentPage}&limit=${limit}`;
+                
+                if (typeFilter !== 'all') url += `&type=${typeFilter}`;
+                if (statusFilter !== 'all') url += `&status=${statusFilter}`;
+                if (userFilter !== 'all') url += `&user_type=${userFilter}`;
+                if (dateRange !== 'all') url += `&date_range=${dateRange}`;
+                if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+                
+                const response = await apiCall(url);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    notificationsData = data.notifications || [];
+                    totalNotifications = data.total_count || 0;
+                    
+                    renderNotifications();
+                    updateSummaryCards(data.summary || {});
+                    updatePagination();
+                } else {
+                    throw new Error('Failed to load notifications');
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                notificationsContainer.innerHTML = `
+                    <div class="p-6 text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p>Failed to load notifications. Please try again.</p>
+                        <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="loadNotifications()">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderNotifications() {
+            if (notificationsData.length === 0) {
+                notificationsContainer.innerHTML = `
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                        <p>No notifications found.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            notificationsData.forEach(notification => {
+                const date = new Date(notification.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const isUnread = notification.status === 'unread';
+                const typeClass = `type-${notification.type}`;
+                const statusClass = isUnread ? 'status-unread' : 'status-read';
+                const statusText = isUnread ? 'Unread' : 'Read';
+                const unreadClass = isUnread ? 'unread' : '';
+                
+                html += `
+                    <div class="notification-item ${unreadClass} p-6 hover:bg-gray-50 cursor-pointer" data-id="${notification.id}">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 pt-0.5">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-bell text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1 min-w-0">
+                                <div class="flex justify-between">
+                                    <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="type-badge ${typeClass}">${notification.type}</span>
+                                        <span class="status-badge ${statusClass}">${statusText}</span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">${notification.message}</p>
+                                <div class="mt-2 flex items-center justify-between">
+                                    <span class="text-xs text-gray-500">${date}</span>
+                                    <div class="flex space-x-3">
+                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium" onclick="viewNotification('${notification.id}')">
+                                            View Details
+                                        </button>
+                                        ${isUnread ? `
+                                        <button class="text-gray-500 hover:text-gray-700 text-sm font-medium" onclick="markAsRead('${notification.id}')">
+                                            Dismiss
+                                        </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notificationsContainer.innerHTML = html;
+            
+            // Add click event to mark as read when clicking anywhere on the notification
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.addEventListener('click', function() {
+                    const notificationId = this.getAttribute('data-id');
+                    markAsRead(notificationId);
+                });
+            });
+        }
+
+        function updateSummaryCards(summary) {
+            document.getElementById('total-notifications').textContent = summary.total || 0;
+            document.getElementById('unread-notifications').textContent = summary.unread || 0;
+            document.getElementById('system-notifications').textContent = summary.system || 0;
+            document.getElementById('user-notifications').textContent = summary.user || 0;
+            
+            document.getElementById('unread-count').textContent = summary.unread || 0;
+            
+            // Set some mock trends (in a real app, this would come from the API)
+            document.getElementById('total-trend').textContent = '+12.5%';
+            document.getElementById('unread-trend').textContent = summary.unread_trend || '+3.2%';
+            document.getElementById('system-trend').textContent = '+5.7%';
+            document.getElementById('user-trend').textContent = '+8.1%';
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(totalNotifications / limit);
+            const startItem = (currentPage - 1) * limit + 1;
+            const endItem = Math.min(currentPage * limit, totalNotifications);
+            
+            showingText.textContent = `Showing ${startItem} to ${endItem} of ${totalNotifications} notifications`;
+            paginationInfo.innerHTML = `Showing <span class="font-medium">${startItem}</span> to <span class="font-medium">${endItem}</span> of <span class="font-medium">${totalNotifications}</span> results`;
+            
+            // Generate pagination buttons
+            let paginationHtml = '';
+            
+            // Previous button
+            paginationHtml += `
+                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === 1 ? 'onclick="return false;"' : `onclick="changePage(${currentPage - 1})"`}>
+                    <span class="sr-only">Previous</span>
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            `;
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage ? 'z-10 bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}" onclick="changePage(${i})">
+                        ${i}
+                    </a>
+                `;
+            }
+            
+            // Next button
+            paginationHtml += `
+                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === totalPages ? 'onclick="return false;"' : `onclick="changePage(${currentPage + 1})"`}>
+                    <span class="sr-only">Next</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            `;
+            
+            paginationNav.innerHTML = paginationHtml;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            loadNotifications();
+            window.scrollTo(0, 0);
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                const response = await apiCall(`${API_BASE_URL}/notifications/${notificationId}/read`, {
+                    method: 'PATCH'
+                });
+                
+                if (response.ok) {
+                    // Update UI without reloading
+                    const notificationElement = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+                    if (notificationElement) {
+                        notificationElement.classList.remove('unread');
+                        const statusBadge = notificationElement.querySelector('.status-badge');
+                        if (statusBadge) {
+                            statusBadge.classList.remove('status-unread');
+                            statusBadge.classList.add('status-read');
+                            statusBadge.textContent = 'Read';
+                        }
+                    }
+                    
+                    // Update counters
+                    const unreadCount = parseInt(document.getElementById('unread-notifications').textContent) - 1;
+                    document.getElementById('unread-notifications').textContent = unreadCount;
+                    document.getElementById('unread-count').textContent = unreadCount;
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                alert('Failed to mark notification as read. Please try again.');
+            }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const response = await apiCall(`${API_BASE_URL}/notifications/mark-all-read`, {
+                    method: 'PATCH'
+                });
+                
+                if (response.ok) {
+                    // Update all notifications to read state
+                    document.querySelectorAll('.notification-item').forEach(item => {
+                        item.classList.remove('unread');
+                        const statusBadge = item.querySelector('.status-badge');
+                        if (statusBadge) {
+                            statusBadge.classList.remove('status-unread');
+                            statusBadge.classList.add('status-read');
+                            statusBadge.textContent = 'Read';
+                        }
+                    });
+                    
+                    // Update counters
+                    document.getElementById('unread-notifications').textContent = '0';
+                    document.getElementById('unread-count').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                alert('Failed to mark all notifications as read. Please try again.');
+            }
+        }
+
+        function viewNotification(notificationId) {
+            // In a real application, this would open a detailed view
+            alert(`Viewing details for notification: ${notificationId}`);
+        }
+
         // Toggle sidebar
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const sidebarClose = document.getElementById('sidebar-close');
         
@@ -818,19 +1074,6 @@
                 sidebar.classList.remove('sidebar-collapsed');
                 mainContent.classList.remove('content-expanded');
             }
-        });
-
-        // Mark notification as read when clicked
-        document.querySelectorAll('.notification-item.unread').forEach(item => {
-            item.addEventListener('click', function() {
-                this.classList.remove('unread');
-                const statusBadge = this.querySelector('.status-badge');
-                if (statusBadge) {
-                    statusBadge.classList.remove('status-unread');
-                    statusBadge.classList.add('status-read');
-                    statusBadge.textContent = 'Read';
-                }
-            });
         });
 
         // Select all checkbox functionality

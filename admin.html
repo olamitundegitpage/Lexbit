@@ -43,9 +43,100 @@
             opacity: 0;
             pointer-events: none;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .form-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            
+            <!-- Login Form -->
+            <div id="login-form-container">
+                <h2 class="text-2xl font-bold mb-4">Admin Login</h2>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="login-email">
+                            Email
+                        </label>
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                               id="login-email" type="email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="login-password">
+                            Password
+                        </label>
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                               id="login-password" type="password" placeholder="Password" required>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full flex justify-center items-center" 
+                                type="submit" id="login-button">
+                            <span id="login-button-text">Sign In</span>
+                            <div id="login-spinner" class="loading-spinner ml-2" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+                <div id="login-message" class="form-message mt-4"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar fixed inset-y-0 left-0 bg-white shadow-md w-64 z-20">
         <div class="flex items-center justify-between h-16 border-b border-gray-200 px-4">
@@ -78,7 +169,7 @@
                             <i class="fas fa-users"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Users</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-blue-50 rounded-full">15</span>
+                        <span id="user-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -125,7 +216,7 @@
                             <i class="fas fa-bell"></i>
                         </span>
                         <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
-                        <span class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">3</span>
+                        <span id="notification-count" class="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-50 rounded-full">0</span>
                     </a>
                 </li>
                 <li>
@@ -171,13 +262,13 @@
                         <div>
                             <button class="flex text-sm rounded-full focus:outline-none">
                                 <span class="sr-only">Open user menu</span>
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
+                                <div id="user-avatar" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">A</div>
                             </button>
                         </div>
                         <div class="dropdown-content mt-2 w-48 bg-white rounded-md shadow-lg py-1">
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                            <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                         </div>
                     </div>
                 </div>
@@ -188,7 +279,7 @@
         <main class="flex-1 overflow-y-auto p-6">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-                <p class="text-gray-600">Welcome back, Admin</p>
+                <p class="text-gray-600">Welcome back, <span id="welcome-user">Admin</span></p>
             </div>
             
             <!-- Stats Cards -->
@@ -197,7 +288,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Users</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">1,248</p>
+                            <p id="total-users" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                             <i class="fas fa-users text-xl"></i>
@@ -213,7 +304,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Active Investments</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">856</p>
+                            <p id="active-investments" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="p-3 rounded-full bg-green-100 text-green-600">
                             <i class="fas fa-chart-line text-xl"></i>
@@ -229,7 +320,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Total Deposits</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">$248,750</p>
+                            <p id="total-deposits" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="p-3 rounded-full bg-purple-100 text-purple-600">
                             <i class="fas fa-dollar-sign text-xl"></i>
@@ -245,7 +336,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-500 truncate">Pending Withdrawals</p>
-                            <p class="mt-1 text-3xl font-semibold text-gray-900">24</p>
+                            <p id="pending-withdrawals" class="mt-1 text-3xl font-semibold text-gray-900">Loading...</p>
                         </div>
                         <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
                             <i class="fas fa-exchange-alt text-xl"></i>
@@ -264,10 +355,10 @@
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-medium text-gray-900">User Growth</h2>
                         <div class="relative">
-                            <select class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                                <option>Last 7 days</option>
-                                <option>Last 30 days</option>
-                                <option selected>Last 12 months</option>
+                            <select id="user-growth-period" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                                <option value="12" selected>Last 12 months</option>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                 <i class="fas fa-chevron-down text-xs"></i>
@@ -275,9 +366,11 @@
                         </div>
                     </div>
                     <div class="chart-container">
-                        <!-- Chart would be rendered here with a library like Chart.js -->
-                        <div class="flex items-center justify-center h-full bg-gray-50 rounded">
-                            <p class="text-gray-500">User Growth Chart</p>
+                        <div id="user-growth-chart" class="flex items-center justify-center h-full bg-gray-50 rounded">
+                            <div class="text-center">
+                                <div class="loading-spinner mx-auto mb-2"></div>
+                                <p class="text-gray-500">Loading chart data...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -286,10 +379,10 @@
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-medium text-gray-900">Investment Distribution</h2>
                         <div class="relative">
-                            <select class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
-                                <option>By Plan</option>
-                                <option selected>By Country</option>
-                                <option>By Duration</option>
+                            <select id="investment-distribution-type" class="appearance-none bg-gray-100 border border-gray-300 text-gray-700 py-1 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 text-sm">
+                                <option value="plan">By Plan</option>
+                                <option value="country" selected>By Country</option>
+                                <option value="duration">By Duration</option>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                 <i class="fas fa-chevron-down text-xs"></i>
@@ -297,9 +390,11 @@
                         </div>
                     </div>
                     <div class="chart-container">
-                        <!-- Chart would be rendered here with a library like Chart.js -->
-                        <div class="flex items-center justify-center h-full bg-gray-50 rounded">
-                            <p class="text-gray-500">Investment Distribution Chart</p>
+                        <div id="investment-distribution-chart" class="flex items-center justify-center h-full bg-gray-50 rounded">
+                            <div class="text-center">
+                                <div class="loading-spinner mx-auto mb-2"></div>
+                                <p class="text-gray-500">Loading chart data...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -312,7 +407,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
-                            <a href="#" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
+                            <a href="admintransaction.html" class="text-sm text-blue-600 hover:text-blue-800">View All</a>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -325,63 +420,14 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody id="recent-transactions" class="bg-white divide-y divide-gray-200">
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">JD</div>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
-                                                    <div class="text-sm text-gray-500">john@example.com</div>
-                                                </div>
+                                        <td colspan="5" class="px-6 py-8 text-center">
+                                            <div class="flex justify-center items-center">
+                                                <div class="loading-spinner"></div>
+                                                <span class="ml-2">Loading transactions...</span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Deposit</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$1,200.00</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 15, 2023</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">AS</div>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">Alice Smith</div>
-                                                    <div class="text-sm text-gray-500">alice@example.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Withdrawal</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$500.00</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 14, 2023</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">RJ</div>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
-                                                    <div class="text-sm text-gray-500">robert@example.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Investment</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">$2,500.00</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 13, 2023</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -420,7 +466,7 @@
                                 <p class="text-xs text-gray-500">Create a new announcement</p>
                             </div>
                         </a>
-                        <a href="#" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-200 transition">
+                        <a href="adminsettings.html" class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-200 transition">
                             <div class="p-2 rounded-full bg-yellow-100 text-yellow-600 mr-3">
                                 <i class="fas fa-cog"></i>
                             </div>
@@ -436,66 +482,562 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarClose = document.getElementById('sidebar-close');
+        // API Configuration
+        const API_BASE_URL = 'https://lexbit.onrender.com';
         
-        function toggleSidebar() {
-            sidebar.classList.toggle('sidebar-collapsed');
-            mainContent.classList.toggle('content-expanded');
+        // DOM Elements
+        const authModal = document.getElementById('auth-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const loginForm = document.getElementById('login-form');
+        const loginMessage = document.getElementById('login-message');
+        const loginButton = document.getElementById('login-button');
+        const loginButtonText = document.getElementById('login-button-text');
+        const loginSpinner = document.getElementById('login-spinner');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const welcomeUser = document.getElementById('welcome-user');
+        
+        // Check if user is authenticated
+        let authToken = localStorage.getItem('authToken');
+        let userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        
+        // Show auth modal if not authenticated
+        if (!authToken) {
+            authModal.style.display = 'block';
+        } else {
+            // Update UI with user data
+            updateUserUI();
+            // Load dashboard data
+            initializeDashboard();
         }
         
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        sidebarClose.addEventListener('click', toggleSidebar);
+        // Update UI with user data
+        function updateUserUI() {
+            if (userData.first_name) {
+                const firstName = userData.first_name;
+                welcomeUser.textContent = firstName;
+                userAvatar.textContent = firstName.charAt(0).toUpperCase();
+            }
+        }
         
-        // Close sidebar when clicking outside (on mobile)
-        document.addEventListener('click', function(event) {
-            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
-                event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
-                if (!sidebar.classList.contains('sidebar-collapsed')) {
-                    toggleSidebar();
-                }
+        // Close modal when clicking on X
+        closeModalBtn.addEventListener('click', () => {
+            authModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === authModal) {
+                authModal.style.display = 'none';
             }
         });
-
-        // Set active menu item
-        const menuItems = document.querySelectorAll('#sidebar ul li a');
-        menuItems.forEach(item => {
-            item.addEventListener('click', function() {
-                menuItems.forEach(i => i.classList.remove('active-menu'));
-                this.classList.add('active-menu');
+        
+        // Handle login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Show loading state
+            loginButton.disabled = true;
+            loginButtonText.textContent = 'Signing in...';
+            loginSpinner.style.display = 'inline-block';
+            loginMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
                 
-                // Close sidebar on mobile after selection
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Save token and user data
+                    authToken = data.data.access_token;
+                    userData = { email, first_name: email.split('@')[0] }; // Extract first name from email
+                    
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    // Show success message
+                    showMessage(loginMessage, 'Login successful! Redirecting...', 'success');
+                    
+                    // Update UI and close modal after delay
+                    setTimeout(() => {
+                        authModal.style.display = 'none';
+                        updateUserUI();
+                        initializeDashboard();
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(loginMessage, error.message || 'An error occurred during login', 'error');
+            } finally {
+                // Reset loading state
+                loginButton.disabled = false;
+                loginButtonText.textContent = 'Sign In';
+                loginSpinner.style.display = 'none';
+            }
+        });
+        
+        // Handle logout
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authToken = null;
+            userData = {};
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            authModal.style.display = 'block';
+            
+            // Clear dashboard data
+            document.getElementById('total-users').textContent = 'Loading...';
+            document.getElementById('active-investments').textContent = 'Loading...';
+            document.getElementById('total-deposits').textContent = 'Loading...';
+            document.getElementById('pending-withdrawals').textContent = 'Loading...';
+            
+            const transactionsContainer = document.getElementById('recent-transactions');
+            transactionsContainer.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center">
+                        <div class="flex justify-center items-center">
+                            <div class="loading-spinner"></div>
+                            <span class="ml-2">Please log in to view transactions</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        // Show message in form
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.classList.remove('success', 'error');
+            element.classList.add(type);
+            element.style.display = 'block';
+        }
+        
+        // Function to format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount || 0);
+        }
+        
+        // Function to format date from timestamp
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+        
+        // Function to fetch users from API
+        async function fetchUsers() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expired or invalid
+                        localStorage.removeItem('authToken');
+                        authToken = null;
+                        authModal.style.display = 'block';
+                        throw new Error('Session expired. Please log in again.');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const users = await response.json();
+                return Array.isArray(users) ? users : [users];
+                
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                throw error;
+            }
+        }
+        
+        // Function to calculate dashboard statistics from user data
+        function calculateDashboardStats(users) {
+            // Calculate totals from users
+            const totalDeposits = users.reduce((sum, user) => sum + (user.total_deposit || 0), 0);
+            const totalWithdrawals = users.reduce((sum, user) => sum + (user.total_withdrawal || 0), 0);
+            const totalProfit = users.reduce((sum, user) => sum + (user.total_profit || 0), 0);
+            
+            // Estimate active investments (users with positive balance)
+            const activeInvestments = users.filter(user => (user.balance || 0) > 0).length;
+            
+            // Estimate pending withdrawals (10% of users as a placeholder)
+            const pendingWithdrawals = Math.max(1, Math.floor(users.length * 0.1));
+            
+            return {
+                totalUsers: users.length,
+                activeInvestments,
+                totalDeposits,
+                pendingWithdrawals,
+                totalProfit
+            };
+        }
+        
+        // Function to generate recent transactions from user data
+        function generateRecentTransactions(users) {
+            // Sort users by most recent activity
+            const recentUsers = [...users]
+                .sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0))
+                .slice(0, 5);
+            
+            return recentUsers.map(user => {
+                // Determine transaction type based on user activity
+                let type = 'deposit';
+                let status = 'completed';
+                
+                if (user.total_withdrawal > 0) {
+                    type = 'withdrawal';
+                    status = user.balance > 0 ? 'pending' : 'completed';
+                } else if (user.total_profit > 0) {
+                    type = 'investment';
+                    status = 'active';
+                }
+                
+                return {
+                    user: {
+                        name: `${user.first_name || 'Unknown'} ${user.last_name || ''}`.trim(),
+                        email: user.email || 'No email',
+                        avatar: user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U'
+                    },
+                    type: type,
+                    amount: user.balance || 0,
+                    status: status,
+                    date: formatDate(user.updated_at || user.created_at)
+                };
+            });
+        }
+        
+        // Function to update dashboard statistics
+        function updateDashboardStats(stats) {
+            document.getElementById('total-users').textContent = stats.totalUsers.toLocaleString();
+            document.getElementById('user-count').textContent = stats.totalUsers;
+            document.getElementById('active-investments').textContent = stats.activeInvestments.toLocaleString();
+            document.getElementById('total-deposits').textContent = formatCurrency(stats.totalDeposits);
+            document.getElementById('pending-withdrawals').textContent = stats.pendingWithdrawals.toLocaleString();
+        }
+        
+        // Function to render user growth chart
+        function renderUserGrowthChart(period, users) {
+            const chartContainer = document.getElementById('user-growth-chart');
+            
+            // Calculate user growth data based on creation dates
+            const now = Date.now() / 1000;
+            const usersByPeriod = {};
+            
+            users.forEach(user => {
+                const created = user.created_at;
+                if (!created) return;
+                
+                if (period === '7') {
+                    // Last 7 days
+                    const day = Math.floor((now - created) / (24 * 60 * 60));
+                    if (day >= 0 && day < 7) {
+                        usersByPeriod[6 - day] = (usersByPeriod[6 - day] || 0) + 1;
+                    }
+                } else if (period === '30') {
+                    // Last 30 days (grouped by week)
+                    const week = Math.floor((now - created) / (7 * 24 * 60 * 60));
+                    if (week >= 0 && week < 4) {
+                        usersByPeriod[3 - week] = (usersByPeriod[3 - week] || 0) + 1;
+                    }
+                } else {
+                    // Last 12 months
+                    const month = Math.floor((now - created) / (30 * 24 * 60 * 60));
+                    if (month >= 0 && month < 12) {
+                        usersByPeriod[11 - month] = (usersByPeriod[11 - month] || 0) + 1;
+                    }
                 }
             });
-        });
-
-        // Initialize dropdowns
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-                    dropdown.style.display = 'none';
+            
+            // Fill in missing data points
+            const dataPoints = period === '7' ? 7 : period === '30' ? 4 : 12;
+            const chartData = Array.from({length: dataPoints}, (_, i) => usersByPeriod[i] || 0);
+            
+            const labels = period === '7' 
+                ? ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today']
+                : period === '30' 
+                    ? ['3w ago', '2w ago', 'Last week', 'This week']
+                    : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            chartContainer.innerHTML = `
+                <div class="w-full h-full flex flex-col justify-center p-4">
+                    <div class="flex items-end justify-between h-3/4">
+                        ${chartData.map((value, index) => `
+                            <div class="flex flex-col items-center" style="height: 100%">
+                                <div class="text-xs text-gray-500 mb-1">${labels[index]}</div>
+                                <div class="bg-blue-500 rounded-t w-8 flex items-end justify-center" style="height: ${(value / Math.max(...chartData, 1)) * 80}%">
+                                    <span class="text-white text-xs mb-1">${value}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-sm font-medium text-gray-700">User Growth Trend</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Function to render investment distribution chart
+        function renderInvestmentDistributionChart(type, users) {
+            const chartContainer = document.getElementById('investment-distribution-chart');
+            
+            // Calculate distribution based on user data
+            let distributionData;
+            
+            if (type === 'plan') {
+                // Simulate investment plans based on deposit amounts
+                distributionData = {
+                    labels: ['Basic', 'Silver', 'Gold', 'Platinum', 'Diamond'],
+                    data: [0, 0, 0, 0, 0],
+                    colors: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899']
+                };
+                
+                users.forEach(user => {
+                    const deposit = user.total_deposit || 0;
+                    if (deposit < 1000) distributionData.data[0]++;
+                    else if (deposit < 5000) distributionData.data[1]++;
+                    else if (deposit < 10000) distributionData.data[2]++;
+                    else if (deposit < 20000) distributionData.data[3]++;
+                    else distributionData.data[4]++;
+                });
+            } else if (type === 'country') {
+                // Simulate country distribution
+                distributionData = {
+                    labels: ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'Other'],
+                    data: [35, 20, 15, 10, 8, 12],
+                    colors: ['#3B82F6', '#10B981', '#6366F1', '#8B5CF6', '#EC4899', '#9CA3AF']
+                };
+            } else {
+                // Simulate duration distribution based on account age
+                distributionData = {
+                    labels: ['<1 Month', '1-3 Months', '3-6 Months', '6-12 Months', '>1 Year'],
+                    data: [0, 0, 0, 0, 0],
+                    colors: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899']
+                };
+                
+                const now = Date.now() / 1000;
+                users.forEach(user => {
+                    const accountAge = now - (user.created_at || now);
+                    const months = accountAge / (30 * 24 * 60 * 60);
+                    
+                    if (months < 1) distributionData.data[0]++;
+                    else if (months < 3) distributionData.data[1]++;
+                    else if (months < 6) distributionData.data[2]++;
+                    else if (months < 12) distributionData.data[3]++;
+                    else distributionData.data[4]++;
                 });
             }
-        });
-
-        // Show dropdown when clicking on profile
-        document.querySelector('.dropdown button').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = this.parentNode.querySelector('.dropdown-content');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
+            
+            const total = distributionData.data.reduce((sum, value) => sum + value, 0);
+            
+            chartContainer.innerHTML = `
+                <div class="w-full h-full flex">
+                    <div class="w-1/2 flex items-center justify-center">
+                        <div class="relative" style="width: 120px; height: 120px;">
+                            ${distributionData.data.map((value, index) => {
+                                const percentage = (value / Math.max(total, 1)) * 100;
+                                return `
+                                    <div class="absolute top-0 left-0 w-full h-full" 
+                                         style="background: conic-gradient(${distributionData.colors[index]} 0% ${percentage}%, transparent ${percentage}% 100%); 
+                                                mask: radial-gradient(circle at center, transparent 50%, black 51%);">
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="w-1/2 flex flex-col justify-center">
+                        ${distributionData.data.map((value, index) => `
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 rounded mr-2" style="background-color: ${distributionData.colors[index]}"></div>
+                                <span class="text-xs">${distributionData.labels[index]}: ${((value / Math.max(total, 1)) * 100).toFixed(1)}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
         
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('sidebar-collapsed');
-                mainContent.classList.remove('content-expanded');
+        // Function to render recent transactions
+        function renderRecentTransactions(transactions) {
+            const transactionsContainer = document.getElementById('recent-transactions');
+            
+            transactionsContainer.innerHTML = transactions.map(transaction => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                    ${transaction.user.avatar}
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${transaction.user.name}</div>
+                                <div class="text-sm text-gray-500">${transaction.user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">${transaction.type}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${formatCurrency(transaction.amount)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            transaction.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            transaction.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                        }">
+                            ${transaction.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${transaction.date}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Initialize the dashboard
+        async function initializeDashboard() {
+            try {
+                // Fetch users data
+                const users = await fetchUsers();
+                
+                // Calculate dashboard statistics from user data
+                const stats = calculateDashboardStats(users);
+                updateDashboardStats(stats);
+                
+                // Render charts using user data
+                renderUserGrowthChart('12', users);
+                renderInvestmentDistributionChart('country', users);
+                
+                // Generate and render recent transactions from user data
+                const transactions = generateRecentTransactions(users);
+                renderRecentTransactions(transactions);
+                
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                
+                // Show error messages
+                document.getElementById('total-users').textContent = 'Error';
+                document.getElementById('active-investments').textContent = 'Error';
+                document.getElementById('total-deposits').textContent = 'Error';
+                document.getElementById('pending-withdrawals').textContent = 'Error';
+                
+                const transactionsContainer = document.getElementById('recent-transactions');
+                transactionsContainer.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-600">
+                            Failed to load data. Please check your connection.
+                        </td>
+                    </tr>
+                `;
             }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listeners for chart filters
+            document.getElementById('user-growth-period').addEventListener('change', async (e) => {
+                try {
+                    const users = await fetchUsers();
+                    renderUserGrowthChart(e.target.value, users);
+                } catch (error) {
+                    console.error('Error updating user growth chart:', error);
+                }
+            });
+            
+            document.getElementById('investment-distribution-type').addEventListener('change', async (e) => {
+                try {
+                    const users = await fetchUsers();
+                    renderInvestmentDistributionChart(e.target.value, users);
+                } catch (error) {
+                    console.error('Error updating investment distribution chart:', error);
+                }
+            });
+            
+            // Existing sidebar functionality
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarClose = document.getElementById('sidebar-close');
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                mainContent.classList.toggle('content-expanded');
+            }
+            
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarClose.addEventListener('click', toggleSidebar);
+            
+            // Close sidebar when clicking outside (on mobile)
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && !sidebar.contains(event.target) && 
+                    event.target !== sidebarToggle && !sidebarToggle.contains(event.target)) {
+                    if (!sidebar.classList.contains('sidebar-collapsed')) {
+                        toggleSidebar();
+                    }
+                }
+            });
+            
+            // Set active menu item
+            const menuItems = document.querySelectorAll('#sidebar ul li a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active-menu'));
+                    this.classList.add('active-menu');
+                    
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+            
+            // Initialize dropdowns
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                        dropdown.style.display = 'none';
+                    });
+                }
+            });
+            
+            // Show dropdown when clicking on profile
+            document.querySelector('.dropdown button').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.parentNode.querySelector('.dropdown-content');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('sidebar-collapsed');
+                    mainContent.classList.remove('content-expanded');
+                }
+            });
         });
     </script>
 </body>
