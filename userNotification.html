@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexBit - Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .notification-item.unread {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+        }
+        .notification-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+        }
+        .filter-active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-container {
+            display: none;
+            background-color: #fee;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-96">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Login Required</h2>
+                <button id="close-auth-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-4">Please log in to view your notifications.</p>
+            <button id="go-to-login" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Go to Login
+            </button>
+        </div>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error-container" class="error-container fixed top-4 right-4 w-96 z-50 hidden">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="font-bold text-red-700" id="error-title">Error</h3>
+                <p id="error-message" class="text-red-600 mt-1"></p>
+            </div>
+            <button id="close-error" class="text-red-700 hover:text-red-900">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                    </div>
+                    <div class="ml-2 text-xl font-bold">LexBit</div>
+                    <nav class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Dashboard</a>
+                        <a href="#" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Investments</a>
+                        <a href="#" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Transactions</a>
+                        <a href="#" class="border-blue-500 text-gray-900 px-3 py-2 text-sm font-medium border-b-2">Notifications</a>
+                        <a href="#" class="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">Settings</a>
+                    </nav>
+                </div>
+                <div class="flex items-center">
+                    <div class="ml-3 relative">
+                        <div>
+                            <button id="user-menu-button" class="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <img class="h-8 w-8 rounded-full" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233B82F6'%3E%3Cpath fill-rule='evenodd' d='M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z' clip-rule='evenodd' /%3E%3C/svg%3E" alt="">
+                            </button>
+                        </div>
+                        <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
+                            <div class="py-1" role="menu" aria-orientation="vertical">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Your Profile</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Settings</a>
+                                <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sign out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="md:flex md:items-center md:justify-between mb-8">
+            <div class="flex-1 min-w-0">
+                <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Notifications</h1>
+                <p class="mt-1 text-sm text-gray-500">Stay updated with your account activities and important alerts</p>
+            </div>
+            <div class="mt-4 flex md:mt-0 md:ml-4">
+                <button type="button" id="mark-all-read" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i class="fas fa-check-double mr-2"></i> Mark all as read
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow mb-6 p-4">
+            <div class="flex flex-wrap items-center">
+                <span class="text-sm font-medium text-gray-700 mr-3 mb-2 md:mb-0">Filter by:</span>
+                <div class="flex space-x-2">
+                    <button class="filter-btn filter-active px-3 py-1 rounded-full text-xs font-medium" data-filter="all">
+                        All
+                    </button>
+                    <button class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-gray-100" data-filter="unread">
+                        Unread
+                    </button>
+                    <button class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-gray-100" data-filter="investment">
+                        Investments
+                    </button>
+                    <button class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-gray-100" data-filter="transaction">
+                        Transactions
+                    </button>
+                    <button class="filter-btn px-3 py-1 rounded-full text-xs font-medium bg-gray-100" data-filter="security">
+                        Security
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul id="notifications-list" class="divide-y divide-gray-200">
+                <li class="p-6 text-center">
+                    <div class="flex justify-center items-center">
+                        <div class="loading-spinner"></div>
+                        <span class="ml-2">Loading notifications...</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6 rounded-lg shadow">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p id="pagination-info" class="text-sm text-gray-700">
+                        Loading notifications...
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button id="prev-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 pagination-btn" disabled>
+                            <span class="sr-only">Previous</span>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="pagination-pages" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                            Page 1 of 1
+                        </span>
+                        <button id="next-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 pagination-btn" disabled>
+                            <span class="sr-only">Next</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Empty State Template (Hidden) -->
+    <template id="empty-state">
+        <li class="p-6 text-center">
+            <i class="fas fa-bell-slash text-4xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-900">No notifications</h3>
+            <p class="mt-1 text-sm text-gray-500">You're all caught up! New notifications will appear here.</p>
+        </li>
+    </template>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://lexbit.onrender.com';
+        
+        // DOM elements
+        const authModal = document.getElementById('auth-modal');
+        const closeAuthModalBtn = document.getElementById('close-auth-modal');
+        const goToLoginBtn = document.getElementById('go-to-login');
+        const errorContainer = document.getElementById('error-container');
+        const errorTitle = document.getElementById('error-title');
+        const errorMessage = document.getElementById('error-message');
+        const closeErrorBtn = document.getElementById('close-error');
+        const notificationsList = document.getElementById('notifications-list');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const searchInput = document.querySelector('input[type="text"]');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenu = document.getElementById('user-menu');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const paginationInfo = document.getElementById('pagination-info');
+        const paginationPages = document.getElementById('pagination-pages');
+        
+        // State variables
+        let authToken = localStorage.getItem('authToken');
+        let refreshToken = localStorage.getItem('refreshToken');
+        let userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        let allNotifications = [];
+        let filteredNotifications = [];
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let totalPages = 1;
+        let totalNotifications = 0;
+
+        // Check if user is authenticated
+        if (!authToken) {
+            authModal.classList.remove('hidden');
+        } else {
+            // Load notifications
+            loadNotifications();
+        }
+        
+        // Show error message
+        function showError(title, message) {
+            errorTitle.textContent = title;
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('hidden');
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                errorContainer.classList.add('hidden');
+            }, 10000);
+        }
+        
+        // Close error message
+        closeErrorBtn.addEventListener('click', () => {
+            errorContainer.classList.add('hidden');
+        });
+        
+        // Close modal when clicking on X
+        closeAuthModalBtn.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+        });
+        
+        // Go to login page
+        goToLoginBtn.addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+        
+        // Toggle user menu
+        userMenuButton.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+        
+        // Handle logout
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            authToken = null;
+            refreshToken = null;
+            userData = {};
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('userData');
+            window.location.reload();
+        });
+        
+        // Function to format date from timestamp
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Unknown';
+            const date = new Date(timestamp * 1000);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffTime / (1000 * 60));
+            
+            if (diffDays > 0) {
+                return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            } else if (diffHours > 0) {
+                return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            } else if (diffMinutes > 0) {
+                return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+            } else {
+                return 'Just now';
+            }
+        }
+        
+        // Function to get notification icon and color based on type
+        function getNotificationIcon(type) {
+            switch(type) {
+                case 'investment':
+                    return { icon: 'chart-line', color: 'text-green-500' };
+                case 'transaction':
+                    return { icon: 'money-bill-wave', color: 'text-blue-500' };
+                case 'security':
+                    return { icon: 'shield-alt', color: 'text-red-500' };
+                case 'bonus':
+                    return { icon: 'gift', color: 'text-purple-500' };
+                case 'account':
+                    return { icon: 'user-check', color: 'text-teal-500' };
+                case 'report':
+                    return { icon: 'chart-pie', color: 'text-orange-500' };
+                default:
+                    return { icon: 'bell', color: 'text-gray-500' };
+            }
+        }
+        
+        // Function to fetch notifications from API
+        async function fetchNotifications(page = 1, limit = 10) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications?page=${page}&limit=${limit}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expired or invalid
+                        localStorage.removeItem('authToken');
+                        authToken = null;
+                        authModal.classList.remove('hidden');
+                        throw new Error('Session expired. Please log in again.');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data;
+                
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+                throw error;
+            }
+        }
+        
+        // Function to mark a notification as read
+        async function markNotificationAsRead(notificationId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications/${notificationId}/read`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data;
+                
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                throw error;
+            }
+        }
+        
+        // Function to mark all notifications as read
+        async function markAllNotificationsAsRead() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications/mark-all-read`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data;
+                
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                throw error;
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    setActiveFilter(filter);
+                });
+            });
+            
+            // Mark all as read button
+            markAllReadBtn.addEventListener('click', markAllAsRead);
+            
+            // Pagination buttons
+            prevPageBtn.addEventListener('click', goToPrevPage);
+            nextPageBtn.addEventListener('click', goToNextPage);
+        }
+        
+        // Set active filter
+        function setActiveFilter(filter) {
+            currentFilter = filter;
+            
+            // Update UI
+            filterButtons.forEach(button => {
+                if (button.dataset.filter === filter) {
+                    button.classList.add('filter-active');
+                    button.classList.remove('bg-gray-100');
+                } else {
+                    button.classList.remove('filter-active');
+                    button.classList.add('bg-gray-100');
+                }
+            });
+            
+            renderNotifications();
+        }
+        
+        // Render notifications based on current filter and search
+        function renderNotifications() {
+            filteredNotifications = allNotifications;
+            
+            // Apply filter
+            if (currentFilter !== 'all') {
+                filteredNotifications = allNotifications.filter(notification => {
+                    if (currentFilter === 'unread') return !notification.read;
+                    return notification.type === currentFilter;
+                });
+            }
+            
+            // Apply search
+            if (searchQuery) {
+                filteredNotifications = filteredNotifications.filter(notification => {
+                    return notification.title.toLowerCase().includes(searchQuery) || 
+                           notification.message.toLowerCase().includes(searchQuery);
+                });
+            }
+            
+            // Clear the list
+            notificationsList.innerHTML = '';
+            
+            // Show empty state if no notifications
+            if (filteredNotifications.length === 0) {
+                const emptyState = document.getElementById('empty-state').content.cloneNode(true);
+                notificationsList.appendChild(emptyState);
+                return;
+            }
+            
+            // Render notifications
+            filteredNotifications.forEach(notification => {
+                const notificationItem = createNotificationElement(notification);
+                notificationsList.appendChild(notificationItem);
+            });
+            
+            // Update pagination info
+            updatePaginationInfo();
+        }
+        
+        // Create notification element
+        function createNotificationElement(notification) {
+            const li = document.createElement('li');
+            li.className = `notification-item ${!notification.read ? 'unread' : ''}`;
+            
+            const iconInfo = getNotificationIcon(notification.type);
+            
+            li.innerHTML = `
+                <div class="px-4 py-4 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full ${iconInfo.color} flex items-center justify-center bg-blue-50">
+                                    <i class="fas fa-${iconInfo.icon}"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="flex items-center">
+                                    <h2 class="text-lg font-medium text-gray-900">${notification.title}</h2>
+                                    ${!notification.read ? '<span class="notification-badge ml-2"></span>' : ''}
+                                </div>
+                                <p class="mt-1 text-sm text-gray-600">${notification.message}</p>
+                                <p class="mt-1 text-xs text-gray-500">${formatDate(notification.created_at)}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            ${!notification.read ? `
+                                <button class="mark-read-btn inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-id="${notification.id}">
+                                    <i class="fas fa-check h-4 w-4"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            if (!notification.read) {
+                const markReadBtn = li.querySelector('.mark-read-btn');
+                markReadBtn.addEventListener('click', () => markAsRead(notification.id));
+            }
+            
+            return li;
+        }
+        
+        // Mark a notification as read
+        async function markAsRead(id) {
+            try {
+                await markNotificationAsRead(id);
+                
+                // Update local state
+                const notification = allNotifications.find(n => n.id === id);
+                if (notification) {
+                    notification.read = true;
+                    renderNotifications();
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                showError('Error', 'Failed to mark notification as read. Please try again.');
+            }
+        }
+        
+        // Mark all notifications as read
+        async function markAllAsRead() {
+            try {
+                await markAllNotificationsAsRead();
+                
+                // Update local state
+                allNotifications.forEach(notification => {
+                    notification.read = true;
+                });
+                
+                renderNotifications();
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                showError('Error', 'Failed to mark all notifications as read. Please try again.');
+            }
+        }
+        
+        // Go to next page
+        function goToNextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadNotifications();
+            }
+        }
+        
+        // Go to previous page
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadNotifications();
+            }
+        }
+        
+        // Update pagination info
+        function updatePaginationInfo() {
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(startIndex + itemsPerPage - 1, totalNotifications);
+            
+            paginationInfo.textContent = `Showing ${startIndex} to ${endIndex} of ${totalNotifications} results`;
+            paginationPages.textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            // Enable/disable pagination buttons
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages;
+        }
+        
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                // Show loading state
+                notificationsList.innerHTML = `
+                    <li class="p-6 text-center">
+                        <div class="flex justify-center items-center">
+                            <div class="loading-spinner"></div>
+                            <span class="ml-2">Loading notifications...</span>
+                        </div>
+                    </li>
+                `;
+                
+                // Fetch notifications
+                const response = await fetchNotifications(currentPage, itemsPerPage);
+                
+                // For demo purposes, we'll use sample data structure
+                // In a real implementation, you would use the actual API response
+                allNotifications = response.notifications || [
+                    {
+                        id: "68b5ef09e182dc754ca2adf1",
+                        title: "Investment Matured",
+                        message: "Your Bitcoin investment plan has matured. $250.00 has been credited to your account.",
+                        type: "investment",
+                        read: false,
+                        created_at: Math.floor(Date.now() / 1000) - 7200 // 2 hours ago
+                    },
+                    {
+                        id: "68b5ef09e182dc754ca2adf2",
+                        title: "Withdrawal Processed",
+                        message: "Your withdrawal of $500.00 has been processed successfully.",
+                        type: "transaction",
+                        read: false,
+                        created_at: Math.floor(Date.now() / 1000) - 18000 // 5 hours ago
+                    },
+                    {
+                        id: "68b5ef09e182dc754ca2adf3",
+                        title: "Security Alert",
+                        message: "A new device signed in to your account. If this wasn't you, please secure your account.",
+                        type: "security",
+                        read: true,
+                        created_at: Math.floor(Date.now() / 1000) - 86400 // 1 day ago
+                    }
+                ];
+                
+                totalNotifications = response.total_count || allNotifications.length;
+                totalPages = Math.ceil(totalNotifications / itemsPerPage);
+                
+                // Render notifications
+                renderNotifications();
+                
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showError('Loading Error', `Failed to load notifications: ${error.message}`);
+                
+                notificationsList.innerHTML = `
+                    <li class="p-6 text-center text-red-600">
+                        Failed to load notifications. Please check your connection.
+                    </li>
+                `;
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (authToken) {
+                setupEventListeners();
+            }
+        });
+    </script>
+</body>
+</html>

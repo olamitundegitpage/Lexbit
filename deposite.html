@@ -792,15 +792,15 @@
                 }
                 
                 const data = await response.json();
-                showToast('Deposit record created successfully', 'success');
-                console.log('Deposit record:', data);
+                // showToast('Deposit record created successfully', 'success');
+                // console.log('Deposit record:', data);
                 
                 // Refresh transaction history after successful deposit
                 fetchTransactionHistory();
                 
             } catch (error) {
-                console.error('Error creating deposit record:', error);
-                showToast('Error creating deposit record. Please try again.', 'error');
+                // console.error('Error creating deposit record:', error);
+                // showToast('Error creating deposit record. Please try again.', 'error');
             }
         }
         
