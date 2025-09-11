@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Your existing CSS styles remain the same */
         .transaction-row {
             transition: background-color 0.2s ease;
         }
@@ -795,14 +796,39 @@
                     return;
                 }
                 
-                // Use the actual API response data
-                // This assumes the API returns an array of transactions
-                transactions = data.transactions || data.data || [];
-                totalTransactions = data.total_count || data.total || transactions.length;
-                totalPages = Math.ceil(totalTransactions / 10);
+                // Handle case where no transactions are found
+                if (data.message === "No transactions found.") {
+                    transactions = [];
+                    totalTransactions = 0;
+                    totalPages = 1;
+                    
+                    // Update summary cards with actual data from the summary object
+                    if (data.summary) {
+                        updateSummaryCardsFromAPI(data.summary);
+                    } else {
+                        updateSummaryCards();
+                    }
+                    
+                    // Update pagination
+                    updatePagination();
+                    
+                    // Render empty state
+                    renderTransactions();
+                    return;
+                }
                 
-                // Update summary cards with actual data
-                updateSummaryCards();
+                // Use the actual API response data
+                // The API returns transactions in data.data and summary in data.summary
+                transactions = data.data || [];
+                totalTransactions = data.pagination?.total || transactions.length;
+                totalPages = data.pagination?.pages || Math.ceil(totalTransactions / 10);
+                
+                // Update summary cards with actual data from the API
+                if (data.summary) {
+                    updateSummaryCardsFromAPI(data.summary);
+                } else {
+                    updateSummaryCards();
+                }
                 
                 // Update pagination
                 updatePagination();
@@ -822,7 +848,18 @@
             }
         }
         
-        // Function to update summary cards with actual data
+        // Function to update summary cards with data from API summary
+        function updateSummaryCardsFromAPI(summary) {
+            totalTransactionsEl.textContent = summary.total_transactions || 0;
+            totalDepositsEl.textContent = `$${(summary.total_deposits || 0).toFixed(2)}`;
+            totalWithdrawalsEl.textContent = `$${(summary.total_withdrawals || 0).toFixed(2)}`;
+            
+            // Calculate total profits (if not provided directly)
+            const totalProfits = (summary.approved_amount || 0) - (summary.total_deposits || 0);
+            totalProfitsEl.textContent = `$${totalProfits.toFixed(2)}`;
+        }
+        
+        // Function to update summary cards with calculated data
         function updateSummaryCards() {
             totalTransactionsEl.textContent = totalTransactions;
             
@@ -842,11 +879,7 @@
         
         // Function to render transactions with actual data
         function renderTransactions() {
-            const startIdx = (currentPage - 1) * 10;
-            const endIdx = Math.min(startIdx + 10, transactions.length);
-            const pageTransactions = transactions.slice(startIdx, endIdx);
-            
-            if (pageTransactions.length === 0) {
+            if (transactions.length === 0) {
                 transactionsBody.innerHTML = `
                     <tr>
                         <td colspan="6" class="px-6 py-4 text-center text-gray-500">
@@ -857,8 +890,8 @@
                 return;
             }
             
-            transactionsBody.innerHTML = pageTransactions.map(transaction => {
-                const transactionDate = new Date(transaction.created_at || transaction.date);
+            transactionsBody.innerHTML = transactions.map(transaction => {
+                const transactionDate = new Date(transaction.created_at * 1000); // Convert from Unix timestamp
                 return `
                 <tr class="transaction-row">
                     <td class="px-6 py-4 whitespace-nowrap">
