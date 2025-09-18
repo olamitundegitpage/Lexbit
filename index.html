@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lexbit - Secure Crypto Investment Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/images/—Pngtree—vector coins icon_3788228.png" type="image/png">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <script>
@@ -148,6 +150,27 @@
         }
         .testimonial-arrow.next {
             right: 10px;
+        }
+
+
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/*         
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        } */
+        
+        .counter {
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
@@ -536,7 +559,7 @@
         </div>
         
        <!-- Investment Plans Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="investmentplan">
             <!-- Plan 1 -->
             <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                 <div class="bg-blue-50 p-6">
@@ -753,6 +776,33 @@
     </div>
 
 
+    <section class="py-16 px-4 w-full max-w-6xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16 text-gray-200">By The Numbers</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="5">0</div>
+                <div class="text-gray-600 font-medium">Years in Business</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="250">0</div>
+                <div class="text-gray-600 font-medium">Active Users</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="500">0</div>
+                <div class="text-gray-600 font-medium">Assets Secured</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="24">0</div>
+                <div class="text-gray-600 font-medium">Customer Support</div>
+            </div>
+        </div>
+    </section>
+
+
     <!-- CTA Section -->
     <section class="py-20 bg-gray-500 text-white">
         <div class="container mx-auto px-4 text-center">
@@ -788,11 +838,11 @@
                 <div>
                     <h4 class="text-white font-semibold mb-4">Resources</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white">About Us</a></li>
-                        <li><a href="#" class="hover:text-white">Contact Support</a></li>
-                        <li><a href="#" class="hover:text-white">Blog Posts</a></li>
-                        <li><a href="#" class="hover:text-white">FAQs</a></li>
-                        <li><a href="#" class="hover:text-white">Community</a></li>
+                        <li><a href="aboutUs.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="support.html" class="hover:text-white">Contact Support</a></li>
+                        <!-- <li><a href="#" class="hover:text-white">Blog Posts</a></li> -->
+                        <li><a href="support.html" class="hover:text-white">FAQs</a></li>
+                        <!-- <li><a href="#" class="hover:text-white">Community</a></li> -->
                     </ul>
                 </div>
                 
@@ -836,9 +886,9 @@
                 <div>
                     <h4 class="text-white font-semibold mb-4">Company Info</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="hover:text-white">Press Releases</a></li>
+                        <!-- <li><a href="#" class="hover:text-white">Press Releases</a></li>
                         <li><a href="#" class="hover:text-white">Investor Relations</a></li>
-                        <li><a href="#" class="hover:text-white">Partnership Opportunities</a></li>
+                        <li><a href="#" class="hover:text-white">Partnership Opportunities</a></li> -->
                         <li><a href="#" class="hover:text-white">Terms of Service</a></li>
                         <li><a href="#" class="hover:text-white">Privacy Commitment</a></li>
                     </ul>
@@ -849,9 +899,9 @@
                     <h4 class="text-white font-semibold mb-4">Get Started</h4>
                     <ul class="space-y-2">
                         <li><a href="#" class="hover:text-white">Join Our Community</a></li>
-                        <li><a href="#" class="hover:text-white">Follow Us Online</a></li>
-                        <li><a href="#" class="hover:text-white">Stay Updated</a></li>
-                        <li><a href="#" class="hover:text-white">Latest News</a></li>
+                        <!-- <li><a href="#" class="hover:text-white">Follow Us Online</a></li> -->
+                        <li><a href="support.html" class="hover:text-white">Stay Updated</a></li>
+                        <!-- <li><a href="#" class="hover:text-white">Latest News</a></li> -->
                         <li><a href="support.html" class="hover:text-white">Contact Us</a></li>
                     </ul>
                 </div>
@@ -860,7 +910,7 @@
             <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 md:mb-0 gap-2">
                     <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                    <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                    <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
                 </div>
                 <!-- <div class="flex space-x-6 mb-4 md:mb-0">
                     <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
@@ -961,6 +1011,77 @@
         
         slider.addEventListener('mouseleave', () => {
             slideInterval = setInterval(nextSlide, 5000);
+        });
+
+
+
+
+         document.addEventListener('DOMContentLoaded', function() {
+            // Simple counter animation function
+            function animateCounter(element, target, duration) {
+                let startTime = null;
+                const initialValue = 0;
+                
+                function updateCounter(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    
+                    // Calculate current value
+                    const currentValue = Math.floor(progress * target);
+                    
+                    // Update element
+                    element.textContent = currentValue;
+                    
+                    // Continue animation if not complete
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        element.textContent = target;
+                    }
+                }
+                
+                // Start the animation
+                requestAnimationFrame(updateCounter);
+            }
+            
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            }
+            
+            // Function to handle scroll event
+            function handleScroll() {
+                const counters = document.querySelectorAll('.counter');
+                let allAnimated = true;
+                
+                counters.forEach(counter => {
+                    if (isInViewport(counter) && counter.textContent === '0') {
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        animateCounter(counter, target, 2000);
+                    }
+                    
+                    if (counter.textContent === '0') {
+                        allAnimated = false;
+                    }
+                });
+                
+                // Remove event listener if all counters have been animated
+                if (allAnimated) {
+                    window.removeEventListener('scroll', handleScroll);
+                }
+            }
+            
+            // Start animation when page loads if counters are already in view
+            handleScroll();
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', handleScroll);
         });
     </script>
 </body>

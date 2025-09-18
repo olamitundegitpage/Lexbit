@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About LexBit - Secure Crypto Investments</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/images/—Pngtree—vector coins icon_3788228.png" type="image/png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .gradient-bg {
@@ -53,6 +54,27 @@
         .menu-overlay.active {
             display: block;
         }
+
+
+           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/*         
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        } */
+        
+        .counter {
+            font-weight: 700;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -72,8 +94,8 @@
             </div>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-600 hover:text-blue-600 relative">
-                    <i class="fas fa-bell"></i>
-                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    <!-- <i class="fas fa-bell"></i> -->
+                    <!-- <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span> -->
                 </button>
                 <div class="flex items-center cursor-pointer">
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
@@ -188,26 +210,28 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">By The Numbers</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl font-bold text-blue-600 mb-2">5+</div>
-                    <div class="text-gray-600">Years in Business</div>
-                </div>
-                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl font-bold text-blue-600 mb-2">250K+</div>
-                    <div class="text-gray-600">Active Users</div>
-                </div>
-                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl font-bold text-blue-600 mb-2">$500M+</div>
-                    <div class="text-gray-600">Assets Secured</div>
-                </div>
-                <div class="stat-card bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl font-bold text-blue-600 mb-2">24/7</div>
-                    <div class="text-gray-600">Customer Support</div>
-                </div>
+   <section class="py-16 px-4 w-full max-w-6xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16 text-gray-800">By The Numbers</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="5">0</div>
+                <div class="text-gray-600 font-medium">Years in Business</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="250">0</div>
+                <div class="text-gray-600 font-medium">Active Users</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="500">0</div>
+                <div class="text-gray-600 font-medium">Assets Secured</div>
+            </div>
+            
+            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                <div class="text-5xl font-bold mb-2 counter" data-target="24">0</div>
+                <div class="text-gray-600 font-medium">Customer Support</div>
             </div>
         </div>
     </section>
@@ -281,7 +305,7 @@
                 Join thousands of investors who trust LexBit for secure, profitable cryptocurrency investments.
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="investmentplan.html" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+                <a href="index.html" class="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
                     View Investment Plans
                 </a>
                 <a href="signup.html" class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
@@ -298,7 +322,7 @@
                 <div>
                     <div class="flex items-center mb-4 gap-2">
                         <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                        <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+                        <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
                     </div>
                     <p class="text-sm">
                         Pioneering secure cryptocurrency investments since 2018. Trusted by thousands worldwide.
@@ -371,6 +395,77 @@
         // Close menu when clicking on a menu item
         document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', toggleMobileMenu);
+        });
+
+
+
+
+         document.addEventListener('DOMContentLoaded', function() {
+            // Simple counter animation function
+            function animateCounter(element, target, duration) {
+                let startTime = null;
+                const initialValue = 0;
+                
+                function updateCounter(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    
+                    // Calculate current value
+                    const currentValue = Math.floor(progress * target);
+                    
+                    // Update element
+                    element.textContent = currentValue;
+                    
+                    // Continue animation if not complete
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        element.textContent = target;
+                    }
+                }
+                
+                // Start the animation
+                requestAnimationFrame(updateCounter);
+            }
+            
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            }
+            
+            // Function to handle scroll event
+            function handleScroll() {
+                const counters = document.querySelectorAll('.counter');
+                let allAnimated = true;
+                
+                counters.forEach(counter => {
+                    if (isInViewport(counter) && counter.textContent === '0') {
+                        const target = parseInt(counter.getAttribute('data-target'));
+                        animateCounter(counter, target, 2000);
+                    }
+                    
+                    if (counter.textContent === '0') {
+                        allAnimated = false;
+                    }
+                });
+                
+                // Remove event listener if all counters have been animated
+                if (allAnimated) {
+                    window.removeEventListener('scroll', handleScroll);
+                }
+            }
+            
+            // Start animation when page loads if counters are already in view
+            handleScroll();
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', handleScroll);
         });
     </script>
 </body>
