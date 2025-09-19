@@ -8,6 +8,10 @@
     <link rel="icon" href="images/—Pngtree—vector coins icon_3788228.png" type="image/png">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -18,6 +22,10 @@
                         'fade-in': 'fadeIn 1.5s ease-in-out',
                         'slide-up': 'slideUp 1s ease-out',
                         'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'gradient': 'gradient 15s ease infinite',
                     },
                     keyframes: {
                         float: {
@@ -31,6 +39,15 @@
                         slideUp: {
                             '0%': { transform: 'translateY(20px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        gradient: {
+                            '0%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                            '100%': { backgroundPosition: '0% 50%' },
                         }
                     }
                 }
@@ -39,13 +56,34 @@
     </script>
 
     <style>
+        /* Base styles */
         .plan-card {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
         }
         .plan-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
+        
+        /* 3D card effect */
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -57,7 +95,10 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(5px);
         }
+        
+        /* Mobile menu */
         .mobile-menu {
             display: none;
             position: fixed;
@@ -95,6 +136,11 @@
             border-radius: 0.5rem;
             width: 90%;
             max-width: 400px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-out;
+        }
+        .modal.active .modal-content {
+            transform: scale(1);
         }
         
         /* Testimonial slider styles */
@@ -104,12 +150,17 @@
         }
         .testimonial-track {
             display: flex;
-            transition: transform 0.5s ease;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .testimonial-slide {
             min-width: 100%;
             padding: 0 15px;
             box-sizing: border-box;
+            opacity: 0.5;
+            transition: opacity 0.8s ease;
+        }
+        .testimonial-slide.active {
+            opacity: 1;
         }
         .testimonial-nav {
             text-align: center;
@@ -123,20 +174,21 @@
             border-radius: 50%;
             margin: 0 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
         .testimonial-dot.active {
             background-color: #3B82F6;
+            transform: scale(1.3);
         }
         .testimonial-arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(255,255,255,0.7);
+            background-color: rgba(255,255,255,0.9);
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             font-size: 20px;
             cursor: pointer;
             z-index: 10;
@@ -144,27 +196,212 @@
             align-items: center;
             justify-content: center;
             color: #3B82F6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        .testimonial-arrow:hover {
+            transform: translateY(-50%) scale(1.1);
+            background-color: #3B82F6;
+            color: white;
         }
         .testimonial-arrow.prev {
-            left: 10px;
+            left: 20px;
         }
         .testimonial-arrow.next {
-            right: 10px;
+            right: 20px;
         }
 
-
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-/*         
+        /* Particle animation */
+        .particles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+            }
+        }
+        
+        /* Button animations */
+        .btn-hover-effect {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .btn-hover-effect:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn-hover-effect:hover:after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        /* Text animation */
+        .text-gradient {
+            background: linear-gradient(90deg, #4F46E5, #EC4899, #4F46E5);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 3s linear infinite;
+        }
+        
+        /* Counter animation */
+        .counter-container {
+            perspective: 1000px;
+        }
+        
+        .counter-digit {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            height: 1.2em;
+        }
+        
+        .counter-number {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Scroll animations */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Feature card hover */
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Glow effects */
+        .glow {
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        
+        .glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Animation delays */
+        .animation-delay-100 {
+            animation-delay: 100ms;
+        }
+        
+        .animation-delay-200 {
+            animation-delay: 200ms;
+        }
+        
+        .animation-delay-300 {
+            animation-delay: 300ms;
+        }
+        
+        .animation-delay-400 {
+            animation-delay: 400ms;
+        }
+        
+        .animation-delay-500 {
+            animation-delay: 500ms;
+        }
+        
+        .animation-delay-600 {
+            animation-delay: 600ms;
+        }
+        
+        .animation-delay-700 {
+            animation-delay: 700ms;
+        }
+        
+        .animation-delay-800 {
+            animation-delay: 800ms;
+        }
+        
+        .animation-delay-900 {
+            animation-delay: 900ms;
+        }
+        
+        .animation-delay-1000 {
+            animation-delay: 1000ms;
+        }
+        
+        /* Staggered animation for children */
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        /* Gradient animation */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #3B82F6, #6366F1, #8B5CF6, #EC4899);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        } */
+            scroll-behavior: smooth;
+        }
         
         .counter {
             font-weight: 700;
@@ -172,35 +409,55 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+
+         /* Smooth horizontal scroll animation */
+      @keyframes ticker {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .ticker-track {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: ticker 40s linear infinite;
+    }
     </style>
 </head>
-<body class="font-sans bg-gray-700">
+<body class="font-sans bg-white">
     <!-- Header/Navigation -->
-    <header class="bg-white shadow- fixed top-0 left-0 w-full bg-white shadow z-50">
+    <header class="bg-white shadow fixed top-0 left-0 w-full bg-white shadow z-50">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                    <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
-                </div>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400 animate-bounce"></i>
+                <a href="index.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
             <nav class="hidden md:flex space-x-8">
-                <a href="aboutUs.html" class="text-gray-600 hover:text-blue-600">About Us</a>
-                <!-- <a href="#" class="text-gray-600 hover:text-blue-600">Features</a> -->
-                <a href="#testimonials" class="text-gray-600 hover:text-blue-600">Testimonials</a>
-                <!-- <a href="#" class="text-gray-600 hover:text-blue-600">Resources</a> -->
-                <a href="support.html" class="text-gray-600 hover:text-blue-600">Support</a>
+                <a href="aboutUs.html" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">About Us</a>
+                <a href="#testimonials" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Testimonials</a>
+                <a href="support.html" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Support</a>
             </nav>
             <div class="flex space-x-4">
-                <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50">Login</a>
-                <a class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" href="signup.html">Sign up</a>
+                <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300">Login</a>
+                <a class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 btn-hover-effect" href="signup.html">Sign up</a>
             </div>
             <button id="mobile-menu-button" class="md:hidden text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
         </div>
+
+        <!-- Crypto Ticker -->
+  <div class="overflow-hidden bg-gray-800 border-y border-gray-700">
+    <div id="cryptoTicker" class="ticker-track py-2 gap-10"></div>
+  </div>
+  </div>
     </header>
 
-    <section>
-         <!-- Mobile Menu Overlay -->
+     <!-- Crypto Ticker -->
+  <!-- <div class="overflow-hidden bg-gray-800 border-y border-gray-700 fixed mt-[10px] ">
+    <div id="cryptoTicker" class="ticker-track text-sm text-yellow-300 py-2 px-4 z-index[1]"></div>
+  </div> -->
+
+    <!-- Mobile Menu Overlay -->
     <div id="menu-overlay" class="menu-overlay"></div>
     
     <!-- Mobile Menu -->
@@ -218,42 +475,33 @@
             <div class="flex-1 overflow-y-auto p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="aboutUs.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <a href="aboutUs.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700 transition-colors duration-300">
                             <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
                             <span class="font-medium">About Us</span>
                         </a>
                     </li>
-                    <!-- <li>
-                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-chart-line w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Features</span>
-                        </a>
-                    </li> -->
                     <li>
-                        <a href="#testimonials" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <a href="#testimonials" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700 transition-colors duration-300">
                             <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
                             <span class="font-medium">Testimonies</span>
                         </a>
                     </li>
-                    <!-- <li>
-                        <a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
-                            <span class="font-medium">Resource</span>
-                        </a>
-                    </li> -->
-
-                     <li>
-                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                    <li>
+                        <a href="support.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700 transition-colors duration-300">
                             <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
                             <span class="font-medium">Support</span>
                         </a>
                     </li>
                 </ul>
             </div>
-    </section>
+        </div>
+    </div>
 
     <!-- Hero Section -->
- <section style="background-image: url(images/crypto6.webp);" class="bg-no-repeat bg-opacity-[10] text-white py-20 h-[900px] bg-cover bg-[url(/images/crypto6.webp)] relative overflow-hidden">
+    <section style="background-image: url(images/crypto6.webp);" class="bg-no-repeat bg-opacity-[10] text-white py-20 h-[900px] bg-cover bg-[url(/images/crypto6.webp)] relative overflow-hidden">
+        <!-- Particle animation -->
+        <div class="particles-container" id="particles-container"></div>
+        
         <!-- Animated background elements -->
         <div class="absolute inset-0 overflow-hidden">
             <!-- Floating crypto coins -->
@@ -268,70 +516,70 @@
         <div class="container mx-auto px-4 flex flex-col md:flex-row items-center pt-20 relative z-10">
             <!-- Text content with staggered animations -->
             <div class="md:w-1/2 mb-10 md:mb-0">
-                <h1 class="text-4xl md:text-5xl font-bold mb-6 animate-fade-in animation-delay-100">
-                    <span class="inline-block animate-slide-up">Unlock Your Crypto</span><br>
-                    <span class="inline-block animate-slide-up animation-delay-100">Investment Potential</span><br>
-                    <span class="inline-block animate-slide-up animation-delay-200">Today</span>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                    <span class="inline-block text-gradient animate-slide-up">Unlock Your Crypto</span><br>
+                    <span class="inline-block text-gradient animate-slide-up animation-delay-200">Investment Potential</span><br>
+                    <span class="inline-block text-gradient animate-slide-up animation-delay-400">Today</span>
                 </h1>
-                <p class="text-xl mb-8 animate-fade-in animation-delay-300">
+                <p class="text-xl mb-8 animate-fade-in animation-delay-600">
                     Join Lexbit and take control of your financial future with our secure and user-friendly platform. Start your journey in the world of crypto investing.
                 </p>
-                <div class="flex gap-4 sm:flex-row space-y-0 sm:space-y-0 sm:space-x-4 animate-fade-in animation-delay-500">
-                   <a href="signup.html"> <button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100 transform hover:scale-105 transition-transform duration-300">
+                <div class="flex gap-4 sm:flex-row space-y-0 sm:space-y-0 sm:space-x-4 animate-fade-in animation-delay-800">
+                   <a href="signup.html"> <button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100 transform hover:scale-105 transition-all duration-300 btn-hover-effect glow">
                         Get Started
                     </button></a>
-                    <a href="#testimonials"><button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-transform duration-300">
+                    <a href="#testimonials"><button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all duration-300 btn-hover-effect">
                         See Testimonials
                     </button></a>
                 </div>
             </div>
             
             <!-- Image with floating animation -->
-            <div class="md:w-1/2 flex justify-center animate-float animation-delay-700">
+            <div class="md:w-1/2 flex justify-center animate-float animation-delay-1000">
                 <div class="rounded-xl p-8 mt-0">
-                    <img src="images/bit1-removebg-preview.png" alt="Crypto Dashboard" class="rounded-lg max-w-md transform hover:rotate-6 transition-transform duration-500">
+                    <img src="images/bit1-removebg-preview.png" alt="Crypto Dashboard" class="rounded-lg max-w-md transform hover:rotate-6 transition-transform duration-700">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 bg-gray-900">
+    <section class="py-20 bg-gray-900 fade-in-section">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-100 mb-4">Discover the Power of Secure Crypto Investment with Lexbit</h2>
                 <p class="text-xl text-gray-100 max-w-3xl mx-auto">Smart Investing Made Simple for Every Investor</p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8 text-center">
+            <div class="grid md:grid-cols-3 gap-8 text-center stagger-children">
                 <!-- Feature 1 -->
-                <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm hover:shadow-md transition-shadow ">
-                    <div class="w-14 h-14 bg-blue-100 m-auto  rounded-lg flex items-center  mb-6">
+                <div class="feature-card bg-gray-50 p-8 rounded-xl text-center shadow-sm">
+                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6 animate-wiggle">
                         <svg xmlns="http://www.w3.org/2000/svg" 
-                            class="h-8 w-8 text-blue-600 m-auto justify-center  text-center" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-4 text-gray-800">Our Secure Wallet</h3>
                     <p class="text-gray-600 mb-6">Ensures your assets are protected with bank-grade security.</p>
-                    <a href="#" class="text-blue-600 justify-center font-medium hover:text-blue-700 flex items-center">
+                    <a href="#" class="text-blue-600 justify-center font-medium hover:text-blue-700 flex items-center transition-colors duration-300">
                         Learn More
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                     </a>
                 </div>
                 
                 <!-- Feature 2 -->
-                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6">
+                <div class="feature-card bg-gray-50 p-8 rounded-xl shadow-sm">
+                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6 animate-wiggle animation-delay-200">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-4 text-gray-800">Real-Time Alerts</h3>
                     <p class="text-gray-600 mb-6">Receive instant notifications to make informed investment decisions.</p>
-                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center">
+                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center transition-colors duration-300">
                         Get Started
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -340,15 +588,15 @@
                 </div>
                 
                 <!-- Feature 3 -->
-                <div class="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6">
+                <div class="feature-card bg-gray-50 p-8 rounded-xl shadow-sm">
+                    <div class="w-14 h-14 bg-blue-100 m-auto rounded-lg flex items-center justify-center mb-6 animate-wiggle animation-delay-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-4 text-gray-800">Portfolio Management</h3>
                     <p class="text-gray-600 mb-6">Track your investments and performance with our intuitive dashboard.</p>
-                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center">
+                    <a href="#" class="text-blue-600 m-auto justify-center font-medium hover:text-blue-700 flex items-center transition-colors duration-300">
                         Sign Up
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -360,14 +608,14 @@
     </section>
 
     <!-- Platform Features Section -->
-    <section class="py-20 bg-gray-300 ">
+    <section class="py-20 bg-gray-300 fade-in-section">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Explore Our Cutting-Edge Platform Features</h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">Lexbit offers a suite of powerful features designed to enhance your crypto investing experience. From secure wallets to smart investing tools, we prioritize your success and security.</p>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="grid md:grid-cols-2 gap-12 items-center stagger-children">
                 <div>
                     <div class="mb-8">
                         <h3 class="text-2xl font-semibold mb-3 text-gray-800">Your Crypto, Your Control</h3>
@@ -382,15 +630,15 @@
                         <p class="text-gray-600">Receive real-time updates on market movements.</p>
                     </div>
                 </div>
-                <div class=" p-6 rounded-xl ">
-                    <img src="images/bit8-removebg-preview.png" alt="Lexbit Platform" class="rounded-lg w-full">
+                <div class="p-6 rounded-xl">
+                    <img src="images/bit8-removebg-preview.png" alt="Lexbit Platform" class="rounded-lg w-full transform hover:scale-105 transition-transform duration-700">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="py-20 bg-white">
+    <section id="testimonials" class="py-20 bg-white fade-in-section">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Customer Testimonials</h2>
@@ -400,7 +648,7 @@
             <!-- Testimonial Slider -->
             <div class="testimonial-slider relative">
                 <div class="testimonial-track" id="testimonial-track">
-                    <!-- Testimonial 1 -->
+                      <!-- Testimonial 1 -->
                     <div class="testimonial-slide">
                         <div class="bg-gray-50 p-8 text-center rounded-xl shadow-sm">
                             <div class="flex mb-4">
@@ -434,6 +682,7 @@
                     </div>
                     
                     <!-- Testimonial 2 -->
+                       <!-- Testimonial 2 -->
                     <div class="testimonial-slide">
                         <div class="bg-gray-50 p-8 rounded-xl shadow-sm text-center">
                             <div class="flex mb-4 ">
@@ -466,7 +715,7 @@
                         </div>
                     </div>
                     
-                    <!-- Testimonial 3 -->
+                       <!-- Testimonial 3 -->
                     <div class="testimonial-slide">
                         <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm">
                             <div class="flex mb-4 m-auto justify-center">
@@ -499,7 +748,7 @@
                         </div>
                     </div>
                     
-                    <!-- Testimonial 4 -->
+                     <!-- Testimonial 4 -->
                     <div class="testimonial-slide">
                         <div class="bg-gray-50 p-8 rounded-xl text-center shadow-sm">
                             <div class="flex mb-4 m-auto justify-center">
@@ -532,6 +781,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
                 
                 <!-- Navigation Arrows -->
                 <button class="testimonial-arrow prev" aria-label="Previous testimonial">
@@ -552,24 +802,26 @@
         </div>
     </section>
 
-    <div class="container mx-auto px-4 py-12 ">
-        <!-- Page Header -->
+    <!-- Investment Plans Section -->
+    <div class="container mx-auto px-4 py-12 fade-in-section">
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-200 mb-4"> Investment Plan</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-600 mb-4"> Investment Plan</h2>
         </div>
         
        <!-- Investment Plans Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="investmentplan">
-            <!-- Plan 1 -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children" id="investmentplan">
+            <!-- Plan cards with enhanced animations -->
+            <!-- ... (your existing plan cards with added animation classes) ... -->
+
             <div class="plan-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300">
                 <div class="bg-blue-50 p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Starter Plan</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Starter</h3>
                     <p class="text-gray-600">Perfect for beginners in crypto investing</p>
                 </div>
                 <div class="p-6">
                     <div class="flex items-end mb-6">
                         <span class="text-4xl font-bold text-gray-800">5%</span>
-                        <span class="text-gray-500 ml-1">monthly return</span>
+                        <span class="text-gray-500 ml-1">weekly return</span>
                     </div>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-center">
@@ -589,8 +841,8 @@
                             <span class="text-gray-700">24/7 support</span>
                         </li>
                     </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="starter">
-                        Choose Plan
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="starter" data-min="100" data-return="5">
+                        Invest Using Balance
                     </button>
                 </div>
             </div>
@@ -607,7 +859,7 @@
                 <div class="p-6">
                     <div class="flex items-end mb-6">
                         <span class="text-4xl font-bold text-gray-800">8%</span>
-                        <span class="text-gray-500 ml-1">monthly return</span>
+                        <span class="text-gray-500 ml-1">weekly return</span>
                     </div>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-center">
@@ -631,8 +883,8 @@
                             <span class="text-gray-700">Weekly market reports</span>
                         </li>
                     </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="growth">
-                        Choose Plan
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="growth" data-min="500" data-return="8">
+                       Invest Using Balance
                     </button>
                 </div>
             </div>
@@ -646,7 +898,7 @@
                 <div class="p-6">
                     <div class="flex items-end mb-6">
                         <span class="text-4xl font-bold text-gray-800">12%</span>
-                        <span class="text-gray-500 ml-1">monthly return</span>
+                        <span class="text-gray-500 ml-1">weekly return</span>
                     </div>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-center">
@@ -674,8 +926,8 @@
                             <span class="text-gray-700">Exclusive webinars</span>
                         </li>
                     </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="pro">
-                        Choose Plan
+                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors choose-plan-btn" data-plan="pro" data-min="2000" data-return="12">
+                        Invest Using Balance
                     </button>
                 </div>
             </div>
@@ -689,7 +941,7 @@
                 <div class="p-6">
                     <div class="flex items-end mb-6">
                         <span class="text-4xl font-bold text-gray-800">15%</span>
-                        <span class="text-gray-500 ml-1">monthly return</span>
+                        <span class="text-gray-500 ml-1">weekly return</span>
                     </div>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-center">
@@ -717,8 +969,8 @@
                             <span class="text-gray-700">VIP customer support</span>
                         </li>
                     </ul>
-                    <button class="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors choose-plan-btn" data-plan="premium">
-                        Choose Plan
+                    <button class="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors choose-plan-btn" data-plan="premium" data-min="5000" data-return="15">
+                        Invest Using Balance
                     </button>
                 </div>
             </div>
@@ -735,7 +987,7 @@
                 <div class="p-6">
                     <div class="flex items-end mb-6">
                         <span class="text-4xl font-bold text-gray-800">20%</span>
-                        <span class="text-gray-500 ml-1">monthly return</span>
+                        <span class="text-gray-500 ml-1">weekly return</span>
                     </div>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-center">
@@ -767,63 +1019,61 @@
                             <span class="text-gray-700">Exclusive investment opportunities</span>
                         </li>
                     </ul>
-                    <button class="w-full py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium transition-colors choose-plan-btn" data-plan="vip">
-                        Choose Plan
+                    <button class="w-full py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium transition-colors choose-plan-btn" data-plan="vip" data-min="10000" data-return="20">
+                       Invest Using Balance
                     </button>
                 </div>
-            </div>
         </div>
     </div>
 
-
-    <section class="py-16 px-4 w-full max-w-6xl mx-auto">
-        <h2 class="text-4xl font-bold text-center mb-16 text-gray-200">By The Numbers</h2>
+    <!-- Stats Section -->
+    <section class="py-16 px-4 w-full max-w-6xl mx-auto fade-in-section">
+        <h2 class="text-4xl font-bold text-center mb-16 text-gray-600">By The Numbers</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12 stagger-children">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center counter-container">
                 <div class="text-5xl font-bold mb-2 counter" data-target="5">0</div>
                 <div class="text-gray-600 font-medium">Years in Business</div>
             </div>
             
-            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center counter-container">
                 <div class="text-5xl font-bold mb-2 counter" data-target="250">0</div>
                 <div class="text-gray-600 font-medium">Active Users</div>
             </div>
             
-            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center counter-container">
                 <div class="text-5xl font-bold mb-2 counter" data-target="500">0</div>
                 <div class="text-gray-600 font-medium">Assets Secured</div>
             </div>
             
-            <div class="bg-white p-8 rounded-xl shadow-md text-center">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center counter-container">
                 <div class="text-5xl font-bold mb-2 counter" data-target="24">0</div>
                 <div class="text-gray-600 font-medium">Customer Support</div>
             </div>
         </div>
     </section>
 
-
     <!-- CTA Section -->
-    <section class="py-20 bg-gray-500 text-white">
+    <section class="py-20 bg-gray-500 text-white fade-in-section">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">Join Lexbit and Start Investing</h2>
             <p class="text-xl mb-8 max-w-2xl mx-auto">Sign up today and unlock the potential of crypto investing with Lexbit's secure platform.</p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="signup.html"><button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100">Sign Up</button></a>
-                <button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600">Learn More</button>
+                <a href="signup.html"><button class="px-6 py-3 bg-yellow-500 text-blue-600 rounded-md font-medium hover:bg-gray-100 btn-hover-effect glow">Sign Up</button></a>
+                <button class="px-6 py-3 border border-white text-white rounded-md font-medium hover:bg-white hover:text-blue-600 btn-hover-effect">Learn More</button>
             </div>
         </div>
     </section>
 
     <!-- Newsletter Section -->
-    <section class="py-16 bg-gray-700">
+    <section class="py-16 bg-gray-700 fade-in-section">
         <div class="container mx-auto px-4">
             <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm text-center">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-800">Subscribe to Updates</h3>
                 <p class="text-gray-600 mb-6">Stay informed about crypto investment opportunities and news.</p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="email" placeholder="Your Email Here" class="px-4 py-3 border border-gray-300 rounded-md flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button class="px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700">Join</button>
+                    <input type="email" placeholder="Your Email Here" class="px-4 py-3 border border-gray-300 rounded-md flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+                    <button class="px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 btn-hover-effect">Join</button>
                 </div>
                 <p class="text-xs text-gray-500 mt-4">By subscribing you accept our Privacy Policy and Terms. By subscribing you accept our IP</p>
             </div>
@@ -831,7 +1081,11 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 w-full fade-in-section">
+        <!-- Footer content with animations -->
+
+    <!-- Footer -->
+    <!-- <footer class="bg-gray-900 text-gray-300 pt-16 pb-8"> -->
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
                 <!-- Resources -->
@@ -924,9 +1178,13 @@
                 </div>
             </div>
         </div>
+    <!-- </footer> -->
     </footer>
 
     <script>
+        // Initialize GSAP with ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
         // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const closeMenuButton = document.getElementById('close-menu-button');
@@ -965,6 +1223,11 @@
         // Update slider position
         function updateSlider() {
             track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update slides opacity
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentIndex);
+            });
             
             // Update dots
             dots.forEach((dot, index) => {
@@ -1013,11 +1276,9 @@
             slideInterval = setInterval(nextSlide, 5000);
         });
 
-
-
-
-         document.addEventListener('DOMContentLoaded', function() {
-            // Simple counter animation function
+        // Counter animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced counter animation function
             function animateCounter(element, target, duration) {
                 let startTime = null;
                 const initialValue = 0;
@@ -1026,8 +1287,11 @@
                     if (!startTime) startTime = timestamp;
                     const progress = Math.min((timestamp - startTime) / duration, 1);
                     
+                    // Easing function for smoother animation
+                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                    
                     // Calculate current value
-                    const currentValue = Math.floor(progress * target);
+                    const currentValue = Math.floor(easeOutQuart * target);
                     
                     // Update element
                     element.textContent = currentValue;
@@ -1083,6 +1347,122 @@
             // Add scroll event listener
             window.addEventListener('scroll', handleScroll);
         });
+        
+        // Create particle animation
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 15 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                const colors = ['#FFD700', '#3B82F6', '#8B5CF6', '#10B981', '#EF4444'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = color;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create particle animation
+            createParticles();
+            
+            // Initialize GSAP animations
+            gsap.utils.toArray('.fade-in-section').forEach(section => {
+                gsap.to(section, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: section,
+                        start: 'top 80%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+            
+            // Stagger animation for children elements
+            gsap.utils.toArray('.stagger-children').forEach(container => {
+                const children = container.children;
+                gsap.to(children, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: container,
+                        start: 'top 80%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+            
+            // Button hover effects
+            const buttons = document.querySelectorAll('.btn-hover-effect');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function(e) {
+                    const x = e.pageX - this.offsetLeft;
+                    const y = e.pageY - this.offsetTop;
+                    
+                    this.style.backgroundPosition = `${x}px ${y}px`;
+                });
+            });
+        });
+
+
+
+
+       async function loadCryptoPrices() {
+      try {
+        const res = await fetch(
+          'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,solana,dogecoin'
+        );
+        const data = await res.json();
+
+        const ticker = data.map(c => {
+          const change = c.price_change_percentage_24h?.toFixed(2);
+          const isUp = change >= 0;
+          const changeColor = isUp ? 'text-green-400' : 'text-red-400';
+          const changeIcon = isUp ? '▲' : '▼';
+          
+          return `
+            <div class="flex items-center gap-2 text-yellow-300 text-sm">
+              <img src="${c.image}" alt="${c.name}" class="w-5 h-5 rounded-full">
+              <span class="font-medium">${c.symbol.toUpperCase()}</span>
+              <span>$${c.current_price.toLocaleString()}</span>
+              <span class="${changeColor}">${changeIcon} ${Math.abs(change)}%</span>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById('cryptoTicker').innerHTML = ticker + ticker; // duplicate for seamless loop
+      } catch (error) {
+        console.error("Error loading crypto data", error);
+      }
+    }
+
+    loadCryptoPrices();
+    setInterval(loadCryptoPrices, 60000); // refresh every 1 min
+        
     </script>
 </body>
 </html>

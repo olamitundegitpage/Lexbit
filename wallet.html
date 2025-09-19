@@ -755,8 +755,25 @@
             
             let html = '';
             transactions.forEach(transaction => {
-                // Convert Unix timestamp to Date object
-                const transactionDate = new Date(transaction.created_at * 1000);
+                
+                let transactionDate;
+                if (typeof transaction.created_at === 'number') {
+                    // If it's a Unix timestamp (seconds since epoch)
+                    transactionDate = new Date(transaction.created_at * 1000);
+                } else if (typeof transaction.created_at === 'string') {
+                    // If it's a date string (ISO format or similar)
+                    transactionDate = new Date(transaction.created_at);
+                    
+                    // If the date is invalid, try parsing it differently
+                    if (isNaN(transactionDate.getTime())) {
+                        // Try removing any timezone information if present
+                        const dateString = transaction.created_at.split('+')[0].split('.')[0];
+                        transactionDate = new Date(dateString);
+                    }
+                } else {
+                    // Fallback to current date if format is unknown
+                    transactionDate = new Date();
+                }
                 let statusClass = '';
                 
                 if (transaction.status === 'approved') statusClass = 'bg-green-100 text-green-800';
