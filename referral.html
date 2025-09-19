@@ -21,8 +21,7 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-
-         .mobile-menu {
+        .mobile-menu {
             display: none;
             position: fixed;
             top: 0;
@@ -53,41 +52,184 @@
         .menu-overlay.active {
             display: block;
         }
-
-
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .login-modal, .register-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-modal.active, .register-modal.active {
+            display: flex;
+        }
+        .profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 200px;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 50;
+        }
+        .profile-menu.active {
+            display: block;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Login Required</h2>
+                <button id="close-login-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="user@example.com" value="user@example.com">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter your password" value="string">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Sign In
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">Don't have an account? <button id="show-register" class="text-blue-600 hover:text-blue-800 font-medium">Register</button></p>
+            </div>
+            <div id="login-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg hidden"></div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="register-modal" class="register-modal">
+        <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+                <button id="close-register-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex border-b border-gray-200 mb-6">
+                <button class="tab-button flex-1 text-center active" data-tab="register">Register</button>
+                <button class="tab-button flex-1 text-center" data-tab="login">Login</button>
+            </div>
+            
+            <form id="register-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" id="first_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="John">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" id="last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Doe">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="register-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="register-email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="user@example.com">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="phone_number" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="+1234567890">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="register-password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Create a password">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="referral_code" class="block text-sm font-medium text-gray-700 mb-1">Referral Code (optional)</label>
+                    <input type="text" id="referral_code" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter referral code">
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Create Account
+                </button>
+            </form>
+            <div id="register-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg hidden"></div>
+            <div id="register-success" class="mt-4 p-3 bg-green-100 text-green-700 rounded-lg hidden"></div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-             <div class="flex items-center space-x-2">
-                    <i class="fas fa-coins text-2xl text-yellow-400"></i>
-                    <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
-                </div>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-coins text-2xl text-yellow-400"></i>
+                <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
+            </div>
             <div class="hidden md:flex space-x-8">
                 <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
                 <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
-                <a href="referral.html" class="text-blue-600 hover:text-blue-600">Referral</a>
-                <a href="transactions.html" class="text-gray-600 font-medium">Transaction</a>
+                <a href="referral.html" class="text-blue-600 font-medium">Referral</a>
+                <a href="transactions.html" class="text-gray-600 hover:text-blue-600">Transactions</a>
             </div>
             <div class="flex items-center space-x-4">
                 <button class="text-gray-600 hover:text-blue-600 relative">
                     <i class="fas fa-bell"></i>
                     <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
-                <div class="flex items-center cursor-pointer">
-                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                <div class="relative">
+                    <div id="profile-button" class="flex items-center cursor-pointer">
+                        <div id="profile-initials" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <div id="profile-menu" class="profile-menu">
+                        <div class="py-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Your Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-             <button id="mobile-menu-button" class="md:hidden text-gray-600">
+            <button id="mobile-menu-button" class="md:hidden text-gray-600">
                 <i class="fas fa-bars text-xl"></i>
             </button>
         </div>
     </nav>
 
-    <section>
-            <!-- Mobile Menu Overlay -->
+    <!-- Mobile Menu Overlay -->
     <div id="menu-overlay" class="menu-overlay"></div>
     
     <!-- Mobile Menu -->
@@ -105,7 +247,7 @@
             <div class="flex-1 overflow-y-auto p-4">
                 <ul class="space-y-2">
                     <li>
-                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-600">
+                        <a href="userinfo.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50">
                             <i class="fas fa-tachometer-alt w-6 text-blue-500 mr-3"></i>
                             <span class="font-medium">Dashboard</span>
                         </a>
@@ -117,37 +259,39 @@
                         </a>
                     </li>
                     <li>
-                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
-                            <i class="fas fa-wallet w-6 text-gray-500 mr-3"></i>
-                            <span class="font-medium">Transactions</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="referral.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-blue-600">
                             <i class="fas fa-users w-6 text-blue-500 mr-3"></i>
                             <span class="font-medium">Referral</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="transactions.html" class="flex items-center p-3 rounded-lg hover:bg-blue-50 text-gray-700">
+                            <i class="fas fa-wallet w-6 text-blue-500 mr-3"></i>
+                            <span class="font-medium">Transactions</span>
+                        </a>
+                    </li>
                 </ul>
-            </div>
-            
-            <!-- Menu Footer -->
-            <div class="p-4 border-t border-gray-200">
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-600 hover:text-blue-600 relative">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                    <div class="flex items-center cursor-pointer">
-                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">JD</div>
+                
+                <!-- Mobile Profile Section -->
+                <div class="mt-8 pt-4 border-t border-gray-200">
+                    <div class="flex items-center space-x-3 p-3">
+                        <div id="mobile-profile-initials" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                            <div class="spinner"></div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900" id="mobile-profile-name">User</p>
+                            <p class="text-xs text-gray-500" id="mobile-profile-email">user@example.com</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">Your Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">Settings</a>
+                        <a href="#" id="mobile-logout-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">Sign out</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </section>
-
-  
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8 max-w-6xl">
@@ -160,15 +304,15 @@
         <!-- Referral Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">
-                <div class="text-4xl font-bold text-blue-600 mb-2">12</div>
+                <div class="text-4xl font-bold text-blue-600 mb-2" id="total-referrals">0</div>
                 <div class="text-gray-600">Total Referrals</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">
-                <div class="text-4xl font-bold text-blue-600 mb-2">5</div>
+                <div class="text-4xl font-bold text-blue-600 mb-2" id="active-referrals">0</div>
                 <div class="text-gray-600">Active Referrals</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">
-                <div class="text-4xl font-bold text-blue-600 mb-2">$1,245</div>
+                <div class="text-4xl font-bold text-blue-600 mb-2">$<span id="referral-earnings">0</span></div>
                 <div class="text-gray-600">Total Earnings</div>
             </div>
         </div>
@@ -180,49 +324,32 @@
                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Earn Passive Income</h2>
                     <p class="text-blue-100 mb-6">Share your referral link and earn 15% commission on every deposit your friends make.</p>
                     <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                        <button class="bg-white text-blue-600 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg">
+                        <button class="bg-white text-blue-600 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg" id="share-link-btn">
                             Share Link
                         </button>
-                        <button class="bg-blue-500 bg-opacity-30 text-white hover:bg-opacity-40 font-medium py-3 px-6 rounded-lg border border-blue-300">
+                        <button class="bg-blue-500 bg-opacity-30 text-white hover:bg-opacity-40 font-medium py-3 px-6 rounded-lg border border-blue-300" id="how-it-works-btn">
                             How It Works
                         </button>
                     </div>
                 </div>
-                <!-- <div class="md:w-1/2 flex justify-center">
-                    <img src="https://illustrations.popsy.co/amber/referral.svg" alt="Referral Illustration" class="w-64 h-64">
-                </div> -->
             </div>
         </div>
 
         <!-- Referral Link Section -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden mb-12">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Your Referral Link</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Your Referral code</h2>
             </div>
             <div class="p-6">
                 <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
                     <div class="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <div class="flex items-center">
-                            <input type="text" id="referral-link" value="https://lexbit.io/ref/johndoe123" class="bg-transparent flex-1 text-sm font-mono" readonly>
-                            <button onclick="copyReferralLink()" class="copy-btn ml-2 text-blue-600 hover:text-blue-800 p-2">
+                            <input type="text" id="referral-link" class="bg-transparent flex-1 text-sm font-mono" readonly>
+                            <button id="copy-link" class="copy-btn ml-2 text-blue-600 hover:text-blue-800 p-2">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
                     </div>
-                    <!-- <div class="flex space-x-2">
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
-                            <i class="fab fa-facebook-f"></i>
-                        </button>
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
-                            <i class="fab fa-twitter"></i>
-                        </button>
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
-                            <i class="fab fa-telegram"></i>
-                        </button>
-                        <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-3 rounded-lg">
-                            <i class="fas fa-envelope"></i>
-                        </button>
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -238,7 +365,7 @@
                             <h3 class="text-lg font-bold text-gray-800">Basic Tier</h3>
                             <p class="text-gray-600">Up to 5 referrals</p>
                         </div>
-                        <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium">Current</div>
+                        <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium" id="tier-1-badge">Current</div>
                     </div>
                     <div class="text-3xl font-bold text-gray-800 mb-4">10% <span class="text-lg text-gray-500">commission</span></div>
                     <ul class="space-y-3 mb-6">
@@ -252,9 +379,9 @@
                         </li>
                     </ul>
                     <div class="bg-gray-100 rounded-full h-2 mb-2">
-                        <div class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+                        <div class="progress-bar bg-blue-500 h-2 rounded-full" id="tier-1-progress" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm text-gray-500">5/5 referrals (100%)</p>
+                    <p class="text-sm text-gray-500" id="tier-1-text">0/5 referrals (0%)</p>
                 </div>
                 
                 <!-- Tier 2 -->
@@ -264,7 +391,7 @@
                             <h3 class="text-lg font-bold text-gray-800">Premium Tier</h3>
                             <p class="text-gray-600">6-15 referrals</p>
                         </div>
-                        <div class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-medium">Next</div>
+                        <div class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-medium" id="tier-2-badge">Next</div>
                     </div>
                     <div class="text-3xl font-bold text-gray-800 mb-4">12% <span class="text-lg text-gray-500">commission</span></div>
                     <ul class="space-y-3 mb-6">
@@ -282,9 +409,9 @@
                         </li>
                     </ul>
                     <div class="bg-gray-100 rounded-full h-2 mb-2">
-                        <div class="progress-bar bg-purple-500 h-2 rounded-full" style="width: 40%"></div>
+                        <div class="progress-bar bg-purple-500 h-2 rounded-full" id="tier-2-progress" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm text-gray-500">5/15 referrals (40%)</p>
+                    <p class="text-sm text-gray-500" id="tier-2-text">0/15 referrals (0%)</p>
                 </div>
                 
                 <!-- Tier 3 -->
@@ -315,96 +442,10 @@
                         </li>
                     </ul>
                     <div class="bg-gray-100 rounded-full h-2 mb-2">
-                        <div class="progress-bar bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
+                        <div class="progress-bar bg-yellow-500 h-2 rounded-full" id="tier-3-progress" style="width: 0%"></div>
                     </div>
-                    <p class="text-sm text-gray-500">5/16 referrals (25%)</p>
+                    <p class="text-sm text-gray-500" id="tier-3-text">0/16 referrals (0%)</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Referral History -->
-        <!-- <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-800">Referral History</h2>
-                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    View All
-                </button>
-            </div>
-            <div class="divide-y divide-gray-200"> -->
-                <!-- Referral 1 -->
-                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex items-center mb-4 sm:mb-0">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">JD</div>
-                        <div>
-                            <p class="font-medium">john.doe@example.com</p>
-                            <p class="text-sm text-gray-500">Registered: Jun 10, 2023</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <p class="font-medium text-green-600">Active</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Invested</p>
-                            <p class="font-medium">$2,500.00</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Earned</p>
-                            <p class="font-medium">$250.00</p>
-                        </div>
-                    </div>
-                </div> -->
-                
-                <!-- Referral 2 -->
-                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex items-center mb-4 sm:mb-0">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">AS</div>
-                        <div>
-                            <p class="font-medium">alice.smith@example.com</p>
-                            <p class="text-sm text-gray-500">Registered: May 28, 2023</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <p class="font-medium text-green-600">Active</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Invested</p>
-                            <p class="font-medium">$1,200.00</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Earned</p>
-                            <p class="font-medium">$120.00</p>
-                        </div>
-                    </div>
-                </div> -->
-                
-                <!-- Referral 3 -->
-                <!-- <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex items-center mb-4 sm:mb-0">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold mr-4">RJ</div>
-                        <div>
-                            <p class="font-medium">robert.johnson@example.com</p>
-                            <p class="text-sm text-gray-500">Registered: May 15, 2023</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 sm:flex sm:space-x-8">
-                        <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <p class="font-medium text-yellow-600">Pending</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Invested</p>
-                            <p class="font-medium">$0.00</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Earned</p>
-                            <p class="font-medium">$0.00</p>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
@@ -417,12 +458,6 @@
                     <i class="fas fa-coins text-2xl text-yellow-400"></i>
                     <a href="Lexbit.html"><h1 class="text-2xl font-bold">LexBit</h1></a>
                 </div>
-                <!-- <div class="flex space-x-6">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                </div> -->
             </div>
             <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
                 © 2025 Lexbit. All rights reserved.
@@ -431,42 +466,46 @@
     </footer>
 
     <script>
-        // Copy referral link function
-        function copyReferralLink() {
-            const referralLink = document.getElementById('referral-link');
-            navigator.clipboard.writeText(referralLink.value).then(function() {
-                alert('Referral link copied to clipboard!');
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
+        // Configuration
+        const BASE_URL = 'https://lexbit.onrender.com';
+        let AUTH_TOKEN = localStorage.getItem('auth_token');
+        let CURRENT_USER = null;
         
-        // Mobile menu toggle (if using the navigation script)
-        document.querySelector('button.md\\:hidden').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu) {
-                mobileMenu.classList.toggle('hidden');
-            }
-        });
-
-
-           // Mobile menu functionality
+        // DOM Elements
+        const loginModal = document.getElementById('login-modal');
+        const registerModal = document.getElementById('register-modal');
+        const closeLoginModalBtn = document.getElementById('close-login-modal');
+        const closeRegisterModalBtn = document.getElementById('close-register-modal');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
+        const registerSuccess = document.getElementById('register-success');
+        const profileButton = document.getElementById('profile-button');
+        const profileMenu = document.getElementById('profile-menu');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        const referralLinkInput = document.getElementById('referral-link');
+        const copyLinkButton = document.getElementById('copy-link');
+        const totalReferralsEl = document.getElementById('total-referrals');
+        const activeReferralsEl = document.getElementById('active-referrals');
+        const referralEarningsEl = document.getElementById('referral-earnings');
+        const showRegisterBtn = document.getElementById('show-register');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const closeMenuButton = document.getElementById('close-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
         const menuOverlay = document.getElementById('menu-overlay');
         
-        // Toggle mobile menu
         function toggleMobileMenu() {
             mobileMenu.classList.toggle('active');
             menuOverlay.classList.toggle('active');
             document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         }
         
-        // Open mobile menu
         mobileMenuButton.addEventListener('click', toggleMobileMenu);
-        
-        // Close mobile menu
         closeMenuButton.addEventListener('click', toggleMobileMenu);
         menuOverlay.addEventListener('click', toggleMobileMenu);
         
@@ -474,6 +513,383 @@
         document.querySelectorAll('#mobile-menu a').forEach(link => {
             link.addEventListener('click', toggleMobileMenu);
         });
+        
+        // Toggle profile menu
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu.classList.toggle('active');
+        });
+        
+        // Close profile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.remove('active');
+            }
+        });
+        
+        // Tab switching functionality
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.getAttribute('data-tab');
+                
+                // Update active tab
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show appropriate modal
+                if (tab === 'login') {
+                    registerModal.classList.remove('active');
+                    loginModal.classList.add('active');
+                }
+            });
+        });
+        
+        // Show register modal
+        showRegisterBtn.addEventListener('click', () => {
+            loginModal.classList.remove('active');
+            registerModal.classList.add('active');
+        });
+        
+        // Close modals
+        closeLoginModalBtn.addEventListener('click', () => loginModal.classList.remove('active'));
+        closeRegisterModalBtn.addEventListener('click', () => registerModal.classList.remove('active'));
+        
+        // Function to fetch current user data
+        async function fetchCurrentUser() {
+            try {
+                const response = await fetch(`${BASE_URL}/current_user`, {
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token is invalid, show login modal
+                        showLoginModal();
+                        return null;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const userData = await response.json();
+                return userData;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                return null;
+            }
+        }
+        
+        // Function to update UI with user data
+        function updateUserProfileUI(userData) {
+            // Update profile initials (use first letter of first name or email)
+            const firstName = userData.first_name || '';
+            const lastName = userData.last_name || '';
+            const email = userData.email || '';
+            
+            let initials = '';
+            if (firstName && lastName) {
+                initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+            } else if (firstName) {
+                initials = firstName.charAt(0).toUpperCase();
+            } else if (email) {
+                initials = email.charAt(0).toUpperCase();
+            }
+            
+            document.getElementById('profile-initials').textContent = initials;
+            document.getElementById('mobile-profile-initials').textContent = initials;
+            document.getElementById('mobile-profile-email').textContent = email;
+            
+            // Update mobile profile name
+            const displayName = firstName && lastName ? `${firstName} ${lastName}` : email.split('@')[0];
+            document.getElementById('mobile-profile-name').textContent = displayName;
+            
+            // Update referral stats
+            totalReferralsEl.textContent = userData.referrals_count || 0;
+            referralEarningsEl.textContent = userData.gained || 0;
+            
+            // Update referral link with user's referral code
+            if (userData.user_referral_code) {
+                referralLinkInput.value = `${userData.user_referral_code}`;
+            }
+            
+            // Update tier progress
+            updateTierProgress(userData.referrals_count || 0);
+        }
+        
+        // Update tier progress based on referral count
+        function updateTierProgress(referralCount) {
+            // Tier 1: 0-5 referrals
+            const tier1Progress = Math.min(100, (referralCount / 5) * 100);
+            document.getElementById('tier-1-progress').style.width = `${tier1Progress}%`;
+            document.getElementById('tier-1-text').textContent = `${referralCount}/5 referrals (${Math.round(tier1Progress)}%)`;
+            
+            // Tier 2: 6-15 referrals
+            const tier2Progress = referralCount < 6 ? 0 : Math.min(100, ((referralCount - 5) / 10) * 100);
+            document.getElementById('tier-2-progress').style.width = `${tier2Progress}%`;
+            document.getElementById('tier-2-text').textContent = `${Math.max(0, referralCount - 5)}/10 referrals (${Math.round(tier2Progress)}%)`;
+            
+            // Tier 3: 16+ referrals
+            const tier3Progress = referralCount < 16 ? 0 : Math.min(100, ((referralCount - 15) / 10) * 100);
+            document.getElementById('tier-3-progress').style.width = `${tier3Progress}%`;
+            document.getElementById('tier-3-text').textContent = `${Math.max(0, referralCount - 15)}/10+ referrals (${Math.round(tier3Progress)}%)`;
+            
+            // Update tier badges
+            if (referralCount < 6) {
+                document.getElementById('tier-1-badge').textContent = 'Current';
+                document.getElementById('tier-2-badge').textContent = 'Next';
+                document.getElementById('tier-2-badge').classList.remove('hidden');
+            } else if (referralCount < 16) {
+                document.getElementById('tier-1-badge').classList.add('hidden');
+                document.getElementById('tier-2-badge').textContent = 'Current';
+                document.getElementById('tier-3-badge').textContent = 'Next';
+                document.getElementById('tier-3-badge').classList.remove('hidden');
+            } else {
+                document.getElementById('tier-1-badge').classList.add('hidden');
+                document.getElementById('tier-2-badge').classList.add('hidden');
+                document.getElementById('tier-3-badge').textContent = 'Current';
+            }
+        }
+        
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for referral code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            
+            // If referral code is present in URL, pre-fill the registration form
+            if (refCode) {
+                document.getElementById('referral_code').value = refCode;
+                // Show registration modal if user is not logged in
+                if (!AUTH_TOKEN) {
+                    registerModal.classList.add('active');
+                }
+            }
+            
+            // Set initial profile initials
+            const userEmail = localStorage.getItem('user_email') || 'user@example.com';
+            const initials = userEmail.charAt(0).toUpperCase();
+            document.getElementById('profile-initials').textContent = initials;
+            document.getElementById('mobile-profile-initials').textContent = initials;
+            document.getElementById('mobile-profile-email').textContent = userEmail;
+            document.getElementById('mobile-profile-name').textContent = userEmail.split('@')[0];
+            
+            // Check if we have a valid auth token
+            if (!AUTH_TOKEN) {
+                showLoginModal();
+            } else {
+                // Verify if token is still valid and fetch user data
+                verifyToken();
+            }
+            
+            // Set up event listeners
+            copyLinkButton.addEventListener('click', copyReferralLink);
+            
+            // Login form handling
+            loginForm.addEventListener('submit', handleLogin);
+            
+            // Register form handling
+            registerForm.addEventListener('submit', handleRegister);
+            
+            // Logout handling
+            logoutBtn.addEventListener('click', handleLogout);
+            mobileLogoutBtn.addEventListener('click', handleLogout);
+            
+            // Share buttons
+            document.getElementById('share-link-btn').addEventListener('click', () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join LexBit',
+                        text: 'Join LexBit using my referral link and earn rewards!',
+                        url: referralLinkInput.value
+                    }).catch(console.error);
+                } else {
+                    copyReferralLink();
+                }
+            });
+            
+            document.getElementById('how-it-works-btn').addEventListener('click', () => {
+                alert('How It Works:\n\n1. Share your referral link with friends\n2. They sign up using your link\n3. You earn commission on their investments');
+            });
+        });
+        
+        // Function to show login modal
+        function showLoginModal() {
+            loginModal.classList.add('active');
+        }
+        
+        // Function to verify token validity and fetch user data
+        async function verifyToken() {
+            try {
+                const userData = await fetchCurrentUser();
+                
+                if (userData) {
+                    // Store user data globally
+                    CURRENT_USER = userData;
+                    
+                    // Update UI with user data
+                    updateUserProfileUI(userData);
+                } else {
+                    showLoginModal();
+                }
+            } catch (error) {
+                console.error('Token verification error:', error);
+                showLoginModal();
+            }
+        }
+        
+        // Function to handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Login failed with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status_code === 200) {
+                    // Save tokens and user info
+                    localStorage.setItem('auth_token', data.data.access_token);
+                    localStorage.setItem('refresh_token', data.data.refresh_token);
+                    localStorage.setItem('user_email', email);
+                    
+                    AUTH_TOKEN = data.data.access_token;
+                    
+                    // Fetch and display user data
+                    const userData = await fetchCurrentUser();
+                    if (userData) {
+                        CURRENT_USER = userData;
+                        updateUserProfileUI(userData);
+                    }
+                    
+                    // Hide login modal
+                    loginModal.classList.remove('active');
+                    loginError.classList.add('hidden');
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = error.message || 'Login failed. Please try again.';
+                loginError.classList.remove('hidden');
+            }
+        }
+        
+        // Function to handle registration
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('first_name').value;
+            const lastName = document.getElementById('last_name').value;
+            const email = document.getElementById('register-email').value;
+            const phoneNumber = document.getElementById('phone_number').value;
+            const password = document.getElementById('register-password').value;
+            const referralCode = document.getElementById('referral_code').value;
+            
+            try {
+                const response = await fetch(`${BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        phone_number: phoneNumber,
+                        password: password,
+                        role: "user",
+                        referral_code: referralCode || undefined
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Registration successful
+                    registerSuccess.textContent = 'Registration successful! You can now login.';
+                    registerSuccess.classList.remove('hidden');
+                    registerError.classList.add('hidden');
+                    
+                    // Clear form
+                    registerForm.reset();
+                    
+                    // Switch to login after 2 seconds
+                    setTimeout(() => {
+                        registerModal.classList.remove('active');
+                        loginModal.classList.add('active');
+                        registerSuccess.classList.add('hidden');
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                registerError.textContent = error.message || 'Registration failed. Please try again.';
+                registerError.classList.remove('hidden');
+                registerSuccess.classList.add('hidden');
+            }
+        }
+        
+        // Function to handle logout
+        function handleLogout(e) {
+            e.preventDefault();
+            
+            // Clear all authentication data
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_email');
+            AUTH_TOKEN = null;
+            CURRENT_USER = null;
+            
+            // Show login modal
+            showLoginModal();
+            
+            // Close any open menus
+            profileMenu.classList.remove('active');
+            if (mobileMenu.classList.contains('active')) {
+                toggleMobileMenu();
+            }
+        }
+        
+        // Copy referral link to clipboard
+        function copyReferralLink() {
+            if (!referralLinkInput.value) {
+                alert('Please log in to get your referral link');
+                return;
+            }
+            
+            referralLinkInput.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const originalHtml = copyLinkButton.innerHTML;
+            copyLinkButton.innerHTML = '<i class="fas fa-check"></i>';
+            copyLinkButton.classList.add('text-green-600');
+            
+            setTimeout(() => {
+                copyLinkButton.innerHTML = originalHtml;
+                copyLinkButton.classList.remove('text-green-600');
+            }, 2000);
+            
+            alert('Referral link copied to clipboard!');
+        }
     </script>
 </body>
 </html>

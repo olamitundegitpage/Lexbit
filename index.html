@@ -419,11 +419,11 @@
     .ticker-track {
       display: inline-flex;
       white-space: nowrap;
-      animation: ticker 40s linear infinite;
+      animation: ticker 20s linear infinite;
     }
     </style>
 </head>
-<body class="font-sans bg-white">
+<body class="font-sans bg-gray-900">
     <!-- Header/Navigation -->
     <header class="bg-white shadow fixed top-0 left-0 w-full bg-white shadow z-50">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -1461,7 +1461,7 @@
     }
 
     loadCryptoPrices();
-    setInterval(loadCryptoPrices, 60000); // refresh every 1 min
+    setInterval(loadCryptoPrices, 10000); // refresh every 1 min
         
     </script>
 </body>

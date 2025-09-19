@@ -116,7 +116,7 @@
             <div class="hidden md:flex space-x-8">
                 <a href="userinfo.html" class="text-gray-600 hover:text-blue-600">Dashboard</a>
                 <a href="investmentplan.html" class="text-gray-600 hover:text-blue-600">Investment Plan</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600">Referral</a>
+                <a href="referral.html" class="text-gray-600 hover:text-blue-600">Referral</a>
                 <a href="wallet.html" class="text-blue-600 font-medium">Wallet</a>
             </div>
             <div class="flex items-center space-x-4">
@@ -125,12 +125,19 @@
                     <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button> -->
                 <div class="relative" id="profile-container">
-                    <div id="profile-initials" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold cursor-pointer">
+                    <div class="flex">
+                        <div id="profile-initials" class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold cursor-pointer">
                         <div class="spinner"></div> 
+
+                        
                     </div>
+
+                     <i class="fas fa-chevron-down ml-1 text-gray-500 text-xs mt-2"></i>
+                    </div>
+                    
                     <div id="profile-menu" class="profile-menu"> 
                         <a href="userinfo.html" class="profile-menu-item">Profile</a>
-                        <button id="sign-out-btn" class="profile-menu-item">Sign Out</button>
+                        <a href="index.html" id="sign-out-btn" class="profile-menu-item">Sign Out</a>
                     </div>
                 </div>
             </div>
